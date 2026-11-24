@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>C 기초 · 코딩 문제 풀이</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: C 기초 학습 자료 공통 틀. 한 칼럼, 강의 8단계 섹션, 이름표 상자 그림 */
+:root{--bg:#f3f6fa;--surface:#ffffff;--fg:#1d2533;--muted:#5c6779;--line:#dde3ec;--accent:#2d63a6;--accent-soft:#e3edf9;--tag:#f5c64a;--tag-fg:#3a2c00;--tag-soft:#fdf4d9;--code-bg:#1d2430;--code-fg:#e3e8ef;--code-dim:#8793a3;--code-kw:#8cc2f0;--code-num:#f2b77a;--code-str:#9fd6a8;--ok:#1d7357;--ok-soft:#e1f3ea;--bad:#b23b3b;--bad-soft:#fae5e5;--font-head:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;--font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.75}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:14px;margin-bottom:24px}
+.crumb{font-size:13px;color:var(--muted);font-weight:600}
+h1{margin:0;font-family:var(--font-head);font-weight:400;font-size:clamp(34px,7vw,50px);line-height:1.2;text-wrap:balance}
+h1 .sub{display:block;font-size:.5em;color:var(--accent)}
+.lead{margin:0;color:var(--muted);max-width:60ch;font-size:17.5px}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;margin:6px 0 30px}
+.hero .eq{font-family:var(--font-head);font-size:22px;color:var(--muted)}
+.chip{font-family:var(--font-mono);font-size:26px;font-weight:700;padding:8px 18px;border-radius:14px;background:var(--accent-soft);color:var(--accent)}
+.chip.y{background:var(--tag);color:var(--tag-fg)}
+.named{display:grid;justify-items:center;gap:6px}
+.nametag{font-family:var(--font-head);font-size:19px;background:var(--tag);color:var(--tag-fg);padding:2px 16px;border-radius:8px;transform:rotate(-3deg)}
+.cell{font-family:var(--font-mono);font-size:24px;font-weight:700;min-width:80px;text-align:center;padding:10px 14px;border:3px solid var(--accent);border-radius:14px;background:var(--surface)}
+.named small{font-size:12.5px;color:var(--muted);font-family:var(--font-mono)}
+nav.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 40px}
+nav.steps a{font-size:14.5px;text-decoration:none;color:var(--fg);padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.steps a b{color:var(--accent);margin-right:5px}
+nav.steps a:hover,nav.steps a:focus-visible{border-color:var(--accent);outline:none}
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:400;font-size:28px;margin:0 0 16px;text-wrap:balance}
+h2 .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:20px;flex-shrink:0}
+h3{font-family:var(--font-head);font-weight:400;font-size:21px;margin:26px 0 10px}
+p{margin:0 0 14px;max-width:64ch}
+.key{background:var(--tag-soft);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-size:20px;font-weight:700;line-height:1.5}
+.key small{display:block;font-weight:400;font-size:15.5px;color:var(--muted);margin-top:6px}
+code.i{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px}
+.story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.story>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.story .who{font-weight:700;margin-bottom:4px}.story .bad{color:var(--bad)}.story .good{color:var(--ok)}
+.story .res{font-size:15px;color:var(--muted);margin-top:4px}
+@media (max-width:600px){.story{grid-template-columns:1fr}}
+pre.code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;line-height:1.7;padding:16px 18px;border-radius:12px;overflow-x:auto;margin:0 0 16px}
+.c{color:var(--code-dim)}.k{color:var(--code-kw)}.nm{color:var(--code-num)}.s{color:var(--code-str)}
+.parts{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:4px 0 18px}
+.part{display:grid;justify-items:center;gap:6px}
+.part code{font-family:var(--font-mono);font-size:22px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:2px solid var(--line)}
+.part span{font-size:13.5px;color:var(--muted);font-weight:600}
+.part.p-a code{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.part.p-b code{background:var(--tag);border-color:var(--tag);color:var(--tag-fg)}
+.part.p-c code{color:var(--code-num);border-color:var(--code-num)}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+.way.main{border:2px solid var(--accent)}
+.way-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.way-head h3{margin:0}
+.badge{font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent);color:var(--surface)}
+.way pre.code,.way p,.way .tablewrap{margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.card .t{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--accent)}
+.card .w{font-weight:700}.card .e{font-size:15px;color:var(--muted)}
+.card pre{margin:4px 0 0;font-family:var(--font-mono);font-size:14px;background:var(--bg);padding:7px 11px;border-radius:8px;overflow-x:auto}
+.tablewrap{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--bg)}
+td.m{font-family:var(--font-mono)}
+.secret{background:var(--surface);border:2px dashed var(--tag);border-radius:16px;padding:16px 20px;margin:0 0 14px}
+.secret h3{margin:0 0 8px}.secret pre.code{margin:8px 0}
+.tracer{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.tr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:620px){.tr-body{grid-template-columns:1fr}}
+.tr-code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:14.5px;padding:14px 0;overflow-x:auto;min-width:0}
+.tr-line{padding:3px 16px;white-space:pre;display:flex;gap:12px;border-left:4px solid transparent}
+.tr-line .ln{color:var(--code-dim);width:1.4em;text-align:right;flex-shrink:0}
+.tr-line.on{background:rgba(140,194,240,.18);border-left-color:var(--tag)}
+.tr-state{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
+.lbl{font-size:13px;color:var(--muted);font-weight:700}
+.tr-mem{display:flex;gap:16px;flex-wrap:wrap;min-height:100px;align-items:flex-end}
+.tr-mem .cell{font-size:20px;min-width:64px}
+.tr-mem .named.changed>.cell,.tr-mem .named.changed .rec,.tr-mem .named.changed .arr{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+.arr{display:flex;gap:4px;flex-wrap:wrap}.arr .ac{display:grid;justify-items:center;gap:2px}
+.arr .cell{min-width:48px;font-size:18px;padding:8px}
+.arr small{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.rec{border:3px solid var(--accent);border-radius:14px;background:var(--surface);padding:8px 14px;font-family:var(--font-mono);font-size:15px;display:grid;gap:2px}
+.empty{color:var(--muted);font-size:15px}
+.tr-out{font-family:var(--font-mono);font-size:15px;background:var(--bg);border-radius:10px;padding:8px 12px;min-height:64px;white-space:pre-wrap}
+.tr-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px;min-height:50px}
+.tr-ctrl{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.tr-ctrl .pos{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+button{font-family:var(--font-body);font-size:15px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:14px;margin-bottom:16px}
+.lab-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lab label{font-weight:700;font-size:14.5px;min-width:7em}
+.lab input[type=range]{accent-color:var(--accent);flex:1;min-width:140px}
+.lab .val{font-family:var(--font-mono);font-weight:700;font-size:18px;min-width:2em}
+.lab pre.code{margin:0}
+.screen{font-family:var(--font-mono);font-size:17px;background:var(--bg);border-radius:10px;padding:8px 12px}
+.lab-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px}
+.q-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.q-head b{font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--accent)}
+.q-type{font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.q-type.hard{background:var(--tag-soft);color:var(--tag-fg)}
+.q p{margin-bottom:10px}.q ul{margin:0 0 10px;padding-left:22px}
+details{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details .ans{padding-top:8px}details .ans p{margin-bottom:6px}
+.trap{font-size:14.5px;background:var(--tag-soft);border-radius:10px;padding:8px 14px;margin-top:6px}
+.err{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.err-sym{padding:14px 20px;background:var(--bad-soft);display:grid;gap:4px}
+.err-sym .s1{font-weight:700;color:var(--bad);font-size:17.5px}
+.err-sym .msg{font-family:var(--font-mono);font-size:13px;color:var(--fg);opacity:.85;word-break:break-all}
+.err-body{padding:14px 20px;display:grid;gap:8px}
+.err-body .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.err-body .row b{color:var(--muted);font-size:14.5px;padding-top:2px}
+.err-body .row>span{min-width:0}
+.err-body pre.code{margin:6px 0 0;font-size:14px;padding:10px 14px}
+@media (max-width:480px){.err-body .row{grid-template-columns:1fr;gap:0}}
+.note-small{font-size:14px;color:var(--muted)}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px}
+.lk .when{font-size:13px;color:var(--accent);font-weight:700}
+.lk .what{font-family:var(--font-head);font-size:19px}
+.lk .why{font-size:14.5px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.mission .q-head b{font-size:17px}
+.goal{margin:6px 0 10px;font-size:16px}
+.io{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 12px}
+.io>div{min-width:0}
+.io .lbl{font-size:13.5px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.io pre.code{margin:0}
+@media (max-width:560px){.io{grid-template-columns:1fr}}
+.rules{margin:0 0 10px;padding-left:20px}
+.check{border:2px dashed var(--accent);border-radius:12px;padding:12px 16px;margin-top:12px;background:var(--accent-soft)}
+.check h4{margin:0 0 6px;font-size:15px;color:var(--accent)}
+.check ul{margin:0;padding-left:20px}
+.check .ask{margin-top:8px;font-size:15px}
+.plus{margin-top:10px;font-size:15px;border-left:4px solid var(--tag);padding:4px 0 4px 12px}
+.nocode{font-size:15px;background:var(--tag-soft);border-radius:12px;padding:12px 16px;margin:0 0 16px}
+details.hint summary{color:var(--accent)}
+.sign td:last-child{min-width:7em}
+.topic{display:inline-block;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);margin-left:6px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="crumb">2개월차 · 4주차 · 문제 풀이</div>
+  <h1>코딩 문제 풀이<span class="sub">배운 걸 처음부터 혼자 써 보기</span></h1>
+  <p class="lead">조건문, 반복문, 배열로 작은 게임 기능 5개를 만들어요. 빈 파일에서 시작해서 <code class="i">#include</code>부터 직접 써요.</p>
+  <p class="nocode">정답 코드는 없어요. 한 문제를 끝내면 <b>강사에게 검사</b>를 받고 다음 문제로 넘어가요. 막히면 힌트를 하나씩 펼치고, 그래도 막히면 해당 주제 페이지로 돌아가 보세요.</p>
+</header>
+
+<nav class="steps" aria-label="문제 목록">
+  <a href="#how"><b>0</b>진행 방법</a><a href="#p1"><b>1</b>데미지 계산</a><a href="#p2"><b>2</b>가위바위보 판정</a><a href="#p3"><b>3</b>HP 바</a><a href="#p4"><b>4</b>업다운 게임</a><a href="#p5"><b>5</b>점수판</a><a href="#err"><b>!</b>이럴 땐?</a>
+</nav>
+
+<section id="how">
+  <h2><span class="n">0</span>진행 방법</h2>
+  <ol>
+    <li>문제를 읽고 <b>입력 예시</b>를 넣었을 때 <b>출력 예시</b>와 똑같이 나오게 만들어요. 띄어쓰기와 줄바꿈까지 맞춰요.</li>
+    <li>예시가 2개면 둘 다 넣어 봐요. 두 번째 예시는 보통 실수하기 쉬운 경우예요.</li>
+    <li>다 되면 손을 들고 검사를 받아요. 강사가 <b>다른 값</b>도 넣어 보고, <b>검사 질문</b>을 해요. 코드를 말로 설명할 수 있어야 통과예요.</li>
+    <li>빨리 끝낸 사람은 각 문제의 <b>더 해 보기</b>까지 도전해요.</li>
+  </ol>
+  <div class="tablewrap sign"><table>
+    <thead><tr><th>문제</th><th>주제</th><th>강사 확인</th></tr></thead>
+    <tbody>
+      <tr><td>1. 데미지 계산</td><td>조건문</td><td></td></tr>
+      <tr><td>2. 가위바위보 판정</td><td>조건문</td><td></td></tr>
+      <tr><td>3. HP 바</td><td>반복문</td><td></td></tr>
+      <tr><td>4. 업다운 게임</td><td>반복문</td><td></td></tr>
+      <tr><td>5. 점수판</td><td>배열 + 반복문</td><td></td></tr>
+    </tbody></table></div>
+</section>
+
+<section id="p1">
+  <h2><span class="n">1</span>데미지 계산<span class="topic">조건문</span></h2>
+  <div class="q mission">
+    <p class="goal">공격력, 방어력, 크리티컬 여부를 입력받아 최종 데미지를 출력하세요.</p>
+    <ul class="rules">
+      <li>기본 데미지 = 공격력 - 방어력</li>
+      <li>기본 데미지가 1보다 작으면 <b>1</b>로 해요. (최소 데미지)</li>
+      <li>크리티컬이 1이면 위에서 구한 데미지를 <b>2배</b>로 해요. 0이면 그대로예요.</li>
+    </ul>
+    <div class="io">
+      <div><div class="lbl">입력 예시 1</div><pre class="code">공격력: 30
+방어력: 12
+크리티컬(1/0): 1</pre></div>
+      <div><div class="lbl">출력 예시 1</div><pre class="code">데미지: 36 (크리티컬!)</pre></div>
+      <div><div class="lbl">입력 예시 2</div><pre class="code">공격력: 10
+방어력: 15
+크리티컬(1/0): 0</pre></div>
+      <div><div class="lbl">출력 예시 2</div><pre class="code">데미지: 1</pre></div>
+    </div>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>규칙 세 줄을 <b>순서대로</b> 코드로 옮기면 돼요. 최소 데미지 처리를 크리티컬보다 먼저 해야 해요. 순서를 바꾸면 결과가 달라지는 입력이 있어요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>"(크리티컬!)"은 크리티컬일 때만 붙어요. 출력도 if로 나눠야 해요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>예시 2개가 똑같이 나온다</li><li>공격력 10, 방어력 15, 크리티컬 1을 넣으면 2가 나온다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 최소 데미지 처리와 크리티컬 처리의 순서를 바꾸면 위 세 번째 입력의 결과가 어떻게 되나요?</div></div>
+    <div class="plus"><b>더 해 보기</b>: 크리티컬 여부를 입력받지 말고 랜덤으로 정해 보세요. (20% 확률)</div>
+  </div>
+</section>
+
+<section id="p2">
+  <h2><span class="n">2</span>가위바위보 판정<span class="topic">조건문</span></h2>
+  <div class="q mission">
+    <p class="goal">두 사람이 낸 것을 숫자로 입력받아 승패를 출력하세요. <b>0 = 가위, 1 = 바위, 2 = 보</b>예요.</p>
+    <ul class="rules">
+      <li>출력은 <code class="i">1P 승리</code>, <code class="i">2P 승리</code>, <code class="i">무승부</code> 중 하나예요.</li>
+      <li>0, 1, 2가 아닌 숫자가 하나라도 있으면 <code class="i">잘못된 입력</code>을 출력하고 끝내요.</li>
+      <li>무엇을 냈는지도 글자로 보여 줘요.</li>
+    </ul>
+    <div class="io">
+      <div><div class="lbl">입력 예시 1</div><pre class="code">1P: 0
+2P: 2</pre></div>
+      <div><div class="lbl">출력 예시 1</div><pre class="code">1P 가위 vs 2P 보
+1P 승리</pre></div>
+      <div><div class="lbl">입력 예시 2</div><pre class="code">1P: 1
+2P: 5</pre></div>
+      <div><div class="lbl">출력 예시 2</div><pre class="code">잘못된 입력</pre></div>
+    </div>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>잘못된 입력 검사를 <b>가장 먼저</b> 해요. 그래야 뒤의 코드는 0~2만 걱정하면 돼요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>경우는 9가지예요. 같으면 무승부(3가지), 1P가 이기는 경우 3가지를 찾으면 나머지는 모두 2P 승리예요.</p></div></details>
+    <details class="hint"><summary>힌트 3</summary><div class="ans"><p>숫자를 "가위", "바위", "보" 글자로 바꾸는 부분은 switch를 써도 되고, 문자열 배열을 써도 돼요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>9가지 경우가 모두 맞다 (강사가 몇 개 골라서 넣어 봐요)</li><li>-1, 3 같은 입력에 잘못된 입력이 나온다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 1P가 이기는 3가지 경우를 숫자로 말해 보세요. 숫자 사이에 어떤 규칙이 있나요?</div></div>
+    <div class="plus"><b>더 해 보기</b>: 1P가 이기는 조건을 if 하나로 줄여 보세요. (힌트: <code class="i">%</code> 연산자)</div>
+  </div>
+</section>
+
+<section id="p3">
+  <h2><span class="n">3</span>HP 바<span class="topic">반복문</span></h2>
+  <div class="q mission">
+    <p class="goal">HP(0~100)를 입력받아 막대로 그려 주세요. 10칸짜리 막대이고, HP 10마다 <code class="i">#</code> 한 칸, 나머지는 <code class="i">-</code>로 채워요.</p>
+    <ul class="rules">
+      <li>0~100이 아닌 값을 넣으면 <code class="i">다시 입력하세요</code>를 출력하고 <b>다시 입력받아요</b>. 맞는 값이 들어올 때까지 반복해요.</li>
+      <li>HP가 30 이하면 막대 뒤에 <code class="i"> 위험!</code>을 붙여요.</li>
+    </ul>
+    <div class="io">
+      <div><div class="lbl">입력 예시 1</div><pre class="code">HP: 75</pre></div>
+      <div><div class="lbl">출력 예시 1</div><pre class="code">HP [#######---] 75</pre></div>
+      <div><div class="lbl">입력 예시 2</div><pre class="code">HP: 150
+HP: 20</pre></div>
+      <div><div class="lbl">출력 예시 2</div><pre class="code">다시 입력하세요
+HP [##--------] 20 위험!</pre></div>
+    </div>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p># 개수는 HP를 10으로 나눈 몫이에요. - 개수는 10에서 # 개수를 뺀 거예요. 반복문 두 개로 그려요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>"맞는 값이 나올 때까지 입력받기"는 일단 한 번은 입력받아야 해요. 한 번은 무조건 실행하는 반복문이 있었죠?</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>0, 9, 10, 100을 넣었을 때 막대가 모두 맞다</li><li>-5, 101을 넣으면 다시 입력받는다</li></ul>
+      <div class="ask"><b>검사 질문</b>: HP가 9일 때 #은 몇 개인가요? 왜 그렇게 나오나요?</div></div>
+    <div class="plus"><b>더 해 보기</b>: 최대 HP도 입력받아서(예: 250 중 75), 비율로 10칸을 채워 보세요.</div>
+  </div>
+</section>
+
+<section id="p4">
+  <h2><span class="n">4</span>업다운 게임<span class="topic">반복문</span></h2>
+  <div class="q mission">
+    <p class="goal">컴퓨터가 1~100 사이의 숫자 하나를 랜덤으로 정해요. 사용자가 맞힐 때까지 숫자를 입력받고, 정답보다 작으면 <code class="i">UP</code>, 크면 <code class="i">DOWN</code>을 출력하세요.</p>
+    <ul class="rules">
+      <li>맞히면 몇 번 만에 맞혔는지 출력하고 끝내요.</li>
+      <li>기회는 <b>7번</b>이에요. 7번 안에 못 맞히면 정답을 알려 주고 끝내요.</li>
+      <li>실행할 때마다 정답이 달라야 해요.</li>
+    </ul>
+    <div class="io">
+      <div><div class="lbl">실행 예시 1 (정답 63)</div><pre class="code">1번째: 50
+UP
+2번째: 75
+DOWN
+3번째: 63
+정답! 3번 만에 맞혔어요</pre></div>
+      <div><div class="lbl">실행 예시 2 (정답 2)</div><pre class="code">1번째: 50
+DOWN
+...
+7번째: 3
+DOWN
+실패! 정답은 2</pre></div>
+    </div>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>1~100 랜덤은 랜덤 페이지의 "범위 정하기"를 보세요. 실행할 때마다 달라야 하니 씨앗(srand)도 필요해요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>반복이 끝나는 이유가 두 가지예요. 맞혔을 때, 7번을 다 썼을 때. 반복문 조건 하나로 쓰거나, 7번 반복하면서 맞히면 break 하는 방법이 있어요.</p></div></details>
+    <details class="hint"><summary>힌트 3</summary><div class="ans"><p>반복문이 끝난 뒤에는 "맞혀서 끝났는지, 기회를 다 써서 끝났는지" 구분해야 실패 메시지를 낼 수 있어요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>두 번 실행했을 때 정답이 다르다</li><li>7번째에 맞히면 "정답!"이 나오고 "실패!"는 안 나온다</li><li>7번 다 틀리면 정답이 나온다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 1~100 사이의 숫자는 가장 잘 고르면 최대 몇 번 만에 맞힐 수 있나요? 그래서 기회가 7번인 이유는? (2진법 시간을 떠올려 보세요)</div></div>
+    <div class="plus"><b>더 해 보기</b>: 남은 범위를 알려 주세요. 예: <code class="i">UP (51 ~ 100)</code></div>
+  </div>
+</section>
+
+<section id="p5">
+  <h2><span class="n">5</span>점수판<span class="topic">배열 + 반복문</span></h2>
+  <div class="q mission">
+    <p class="goal">플레이어 5명의 점수를 배열에 입력받고 결과를 출력하세요.</p>
+    <ul class="rules">
+      <li>합계, 평균(소수점 첫째 자리까지), 최고 점수와 그 번호, 최저 점수와 그 번호를 출력해요.</li>
+      <li>같은 점수가 여럿이면 <b>앞 번호</b>를 출력해요.</li>
+      <li>마지막 줄에 평균 이상인 플레이어 번호를 모두 출력해요.</li>
+      <li>점수는 0 이상이에요.</li>
+    </ul>
+    <div class="io">
+      <div><div class="lbl">입력 예시 1</div><pre class="code">1번 점수: 80
+2번 점수: 95
+3번 점수: 70
+4번 점수: 60
+5번 점수: 100</pre></div>
+      <div><div class="lbl">출력 예시 1</div><pre class="code">합계: 405
+평균: 81.0
+최고: 100 (5번)
+최저: 60 (4번)
+평균 이상: 2번 5번</pre></div>
+      <div><div class="lbl">입력 예시 2</div><pre class="code">1번 점수: 50
+2번 점수: 50
+3번 점수: 50
+4번 점수: 50
+5번 점수: 51</pre></div>
+      <div><div class="lbl">출력 예시 2</div><pre class="code">합계: 251
+평균: 50.2
+최고: 51 (5번)
+최저: 50 (1번)
+평균 이상: 5번</pre></div>
+    </div>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>입력, 합계, 최고·최저 찾기, 평균 이상 찾기를 반복문 여러 개로 나눠서 하나씩 만들어 봐요. 한 번에 다 하려고 하면 헷갈려요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>평균은 정수 ÷ 정수라서 소수점이 사라질 수 있어요. 예시 2의 50.2가 나오는지 꼭 확인해요.</p></div></details>
+    <details class="hint"><summary>힌트 3</summary><div class="ans"><p>최고 점수를 찾을 때 시작값을 무엇으로 할지 생각해 보세요. 0으로 시작해도 이 문제에서는 되지만, 더 안전한 시작값이 있어요. 그리고 번호도 같이 기억해야 해요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>예시 2개가 똑같이 나온다 (특히 50.2)</li><li>모두 같은 점수일 때 최고·최저 모두 1번이 나온다</li><li>숫자 5가 코드 여러 곳에 흩어져 있지 않다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 최고 점수를 찾을 때 조건을 <code class="i">&gt;</code> 대신 <code class="i">&gt;=</code>로 쓰면 결과가 어떻게 달라지나요?</div></div>
+    <div class="plus"><b>더 해 보기</b>: 점수가 높은 순서대로 순위표를 출력해 보세요. (1위 5번 100점, 2위 2번 95점, ...)</div>
+  </div>
+</section>
+
+<section id="err">
+  <h2><span class="n">!</span>이럴 땐?</h2>
+  <div class="err"><div class="err-sym"><span class="s1">scanf_s 줄에 초록 물결 경고가 생겨요</span><span class="msg">C6031: 반환 값이 무시되었습니다: 'scanf_s'.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>scanf_s가 "몇 개를 제대로 읽었는지" 돌려주는데 확인하지 않았다는 코드 분석 경고예요.</span></div>
+      <div class="row"><b>어떻게?</b><span>이번 문제에서는 무시해도 실행에는 문제없어요. 빌드가 안 되는 에러와 헷갈리지 마세요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">숫자 대신 글자를 넣었더니 화면이 끝없이 올라가요</span><span class="msg">다시 입력하세요 다시 입력하세요 다시 입력하세요 ...</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>%d가 글자를 못 읽고 입력 창고에 그대로 남겨 둬요. 다음 반복에서도 같은 글자를 또 못 읽어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>이번 문제는 숫자만 넣는다고 생각하고 풀어요. Ctrl+C로 프로그램을 멈출 수 있어요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">업다운 정답이 실행할 때마다 똑같아요</span><span class="msg">항상 42가 정답</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>씨앗(srand)을 안 넣었거나, 반복문 <b>안</b>에 넣었어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>랜덤 페이지를 다시 보세요. srand는 프로그램 시작할 때 한 번만.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">평균이 50.0이나 0.000000으로 나와요</span><span class="msg">평균: 50.0   (기대: 50.2)</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>int ÷ int는 몫만 남아요. 그걸 실수 변수에 넣어도 이미 소수점은 사라진 뒤예요. int를 %f로 찍으면 0.000000 같은 엉뚱한 값이 나와요.</span></div>
+      <div class="row"><b>어떻게?</b><span>나누기 전에 한쪽을 실수로 바꿔요. 연산자 페이지의 "정수 나누기"를 다시 보세요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">배열 마지막 값이 이상하거나 끝날 때 오류 창이 떠요</span><span class="msg">Run-Time Check Failure #2 - Stack around the variable 'score' was corrupted.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>칸이 5개면 번호는 0~4예요. 반복 조건이 <code class="i">&lt;= 5</code>라서 5번 칸(없는 칸)에 썼어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>반복 조건을 확인해요. 화면에는 1번~5번으로 보여 주고, 배열은 0~4를 쓰는 것에 주의해요.</span></div></div></div>
+  <p class="note-small">에러 번호와 문구는 Visual Studio 기준이에요. 파일 종류(.c/.cpp)와 버전에 따라 조금 다를 수 있어요.</p>
+</section>
+<footer>C 기초 학습 자료 · 코딩 문제 풀이 · 2개월차 4주차</footer>
+</div>
+<script>
+(function(){
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  function hl(src){let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  window.hlC=hl;
+  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent)});
+  const T=window.TRACE, root=document.getElementById('tracer');
+  if(!T||!root) return;
+  root.className='tracer';
+  root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">화면에 나온 글자</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
+  const q=s=>root.querySelector(s);
+  q('.tr-code').innerHTML=T.code.map((l,i)=>'<div class="tr-line"><span class="ln">'+(i+1)+'</span><span>'+(hl(l)||' ')+'</span></div>').join('');
+  const lines=[...root.querySelectorAll('.tr-line')];
+  let step=0;
+  function stateAt(n){const mem={};let out='';for(let i=0;i<n;i++){const s=T.steps[i];if(s.mem)for(const k in s.mem){if(s.mem[k]===null)delete mem[k];else mem[k]=s.mem[k];}if(s.out)out+=s.out;}return{mem,out};}
+  function show(v){
+    if(Array.isArray(v))return '<div class="arr">'+v.map((x,i)=>'<div class="ac"><span class="cell">'+esc(x)+'</span><small>['+i+']</small></div>').join('')+'</div>';
+    if(v&&typeof v==='object'&&v.f)return '<div class="rec">'+Object.keys(v.f).map(k=>'<span>'+esc(k)+' : <b>'+esc(v.f[k])+'</b></span>').join('')+'</div>'+(v.a?'<small>'+esc(v.a)+'</small>':'');
+    if(v&&typeof v==='object')return '<span class="cell">'+esc(v.v)+'</span><small>'+esc(v.a)+'</small>';
+    return '<span class="cell">'+esc(v)+'</span>';
+  }
+  function render(){
+    const cur=stateAt(step),prev=stateAt(Math.max(0,step-1));
+    lines.forEach((el,i)=>el.classList.toggle('on',step>0&&T.steps[step-1].ln===i));
+    const keys=Object.keys(cur.mem);
+    q('.tr-mem').innerHTML=keys.length?keys.map(k=>'<div class="named'+(step>0&&JSON.stringify(cur.mem[k])!==JSON.stringify(prev.mem[k])?' changed':'')+'"><span class="nametag">'+esc(k)+'</span>'+show(cur.mem[k])+'</div>').join(''):'<span class="empty">아직 만든 변수가 없어요</span>';
+    q('.tr-out').textContent=cur.out;
+    q('.tr-note').textContent=step===0?'"다음 줄 실행"을 눌러 시작해요.':T.steps[step-1].note;
+    q('.pos').textContent=step+' / '+T.steps.length;
+    q('[data-a=prev]').disabled=q('[data-a=reset]').disabled=step===0;
+    q('[data-a=next]').disabled=step===T.steps.length;
+  }
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='next'&&step<T.steps.length)step++;else if(a==='prev'&&step>0)step--;else if(a==='reset')step=0;else return;render();});
+  render();
+})();
+</script>
+
+</body>
+</html>
