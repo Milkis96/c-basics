@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>8개월 게임 개발 커리큘럼</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: 상단 요약 + 8칸 진행 바, 그 아래 월별 섹션(좌측 주차 라벨 / 우측 주제 목록) */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#1b2330; --muted:#5d6878; --line:#e1e5eb;
+  --c:#2f5d8a; --c-soft:#e6eef6;
+  --cs:#1d7357; --cs-soft:#e2f2eb;
+  --u:#b05a16; --u-soft:#f8ebdf;
+  --proj:#fff8ee;
+  --accent:#2f5d8a; --accent-soft:#e6eef6;
+  --font-body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2028; --fg:#e6eaf0; --muted:#9aa5b4; --line:#2a323d;
+  --c:#7fb0e0; --c-soft:#1c2a39; --cs:#6cc9a3; --cs-soft:#18302a; --u:#f0a466; --u-soft:#34261a;
+  --proj:#231f18; --accent:#7fb0e0; --accent-soft:#1c2a39; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2028; --fg:#e6eaf0; --muted:#9aa5b4; --line:#2a323d;
+  --c:#7fb0e0; --c-soft:#1c2a39; --cs:#6cc9a3; --cs-soft:#18302a; --u:#f0a466; --u-soft:#34261a;
+  --proj:#231f18; --accent:#7fb0e0; --accent-soft:#1c2a39; color-scheme:dark}
+
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding-block:24px 80px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+header{display:grid;gap:18px;margin-bottom:28px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+h1{font-size:clamp(26px,4.5vw,36px);line-height:1.25;margin:0;font-weight:700;text-wrap:balance}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--muted);font-size:14px}
+.stats b{color:var(--fg);font-family:var(--font-mono);font-variant-numeric:tabular-nums;margin-right:4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--tone)}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--tone)}
+.t-c{--tone:var(--c);--soft:var(--c-soft)} .t-cs{--tone:var(--cs);--soft:var(--cs-soft)} .t-u{--tone:var(--u);--soft:var(--u-soft)}
+
+.track{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;margin:6px 0 40px}
+.track a{display:grid;gap:2px;text-decoration:none;color:var(--fg);padding:10px 10px 9px;background:var(--soft);border-top:3px solid var(--tone);border-radius:2px 2px 6px 6px;transition:transform .15s}
+.track a:hover{transform:translateY(-2px)}
+.track a:focus-visible{outline:2px solid var(--tone);outline-offset:2px}
+.track .mn{font-family:var(--font-mono);font-size:12px;color:var(--tone);font-weight:700}
+.track .mt{font-size:13px;font-weight:600;line-height:1.3}
+@media (max-width:640px){.track{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+.month{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:22px;overflow:hidden;scroll-margin-top:16px}
+.mhead{display:flex;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.mnum{font-family:var(--font-mono);font-weight:700;font-size:30px;line-height:1;color:var(--tone);font-variant-numeric:tabular-nums}
+.mtitle{display:grid;gap:2px;min-width:0}
+.mtitle h2{margin:0;font-size:19px;font-weight:700}
+.mtitle span{font-size:13px;color:var(--muted)}
+.mhead .chip{margin-left:auto;flex-shrink:0}
+
+.week{display:grid;grid-template-columns:84px minmax(0,1fr);border-top:1px solid var(--line)}
+.week:first-of-type{border-top:0}
+.week.proj{background:var(--proj)}
+.wlabel{padding:16px 0 16px 22px;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);display:grid;align-content:start;gap:6px}
+.wlabel .pj{font-family:var(--font-body);font-size:11px;font-weight:600;color:var(--u);letter-spacing:.02em}
+.topics{list-style:none;margin:0;padding:14px 22px 14px 8px;display:grid;gap:10px}
+.topics li{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:4px 16px}
+.topics .tn{font-weight:600}
+.topics .tn a{color:var(--tone);text-underline-offset:3px}
+.topics .td{color:var(--muted)}
+.topics .td ul{margin:0;padding-left:18px}
+@media (max-width:560px){
+  .week{grid-template-columns:1fr}
+  .wlabel{padding:14px 16px 0;grid-auto-flow:column;justify-content:start;align-items:center;gap:10px}
+  .topics{padding:8px 16px 14px}
+  .topics li{grid-template-columns:1fr;gap:0}
+  .mhead{padding:16px}
+}
+footer{color:var(--muted);font-size:13px;margin-top:30px}
+@media (prefers-reduced-motion:reduce){.track a{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Curriculum · C → C# → Unity</div>
+    <h1>8개월 게임 개발 커리큘럼</h1>
+    <div class="stats"><span><b>8</b>개월</span><span><b>32</b>주</span><span><b>9</b>개 실습 프로젝트</span></div>
+    <div class="legend">
+      <span class="chip t-c">C 기초 · 1–2개월</span>
+      <span class="chip t-cs">C# 문법 · 3–4개월</span>
+      <span class="chip t-u">유니티 실전 · 5–8개월</span>
+    </div>
+  </header>
+  <nav class="track" id="track" aria-label="월별 바로가기"></nav>
+  <main id="months"></main>
+  <footer>노란 배경 주차는 게임·프로젝트 실습 주차입니다. 밑줄 친 주제는 학습 자료로 연결됩니다.</footer>
+</div>
+
+<script>
+// ───────── 커리큘럼 데이터 (여기만 고치면 페이지 전체가 바뀝니다) ─────────
+// track: c | cs | u   /  project: true 이면 실습 주차로 강조
+// 설명(d)은 문자열 하나 또는 배열(여러 줄 bullet)
+// LINKS: 주제 이름 → 학습 자료 파일 (1~2개월차 C 주제에만 적용)
+const TRACKS = { c:"C 기초", cs:"C# 문법", u:"유니티 실전" };
+const LINKS = { "변수, 상수":"c-variable.html", "자료형":"c-datatype.html", "연산자":"c-operator.html", "입/출력":"c-io.html",
+  "조건문":"c-if.html", "반복문":"c-loop.html", "2진법":"c-binary.html", "메모리":"c-memory.html", "배열":"c-array.html",
+  "함수":"c-func.html", "랜덤":"c-random.html", "포인터 1":"c-pointer.html", "구조체":"c-struct.html",
+  "문자열":"c-string.html", "디버거":"c-debugger.html", "포인터 2":"c-pointer2.html", "Call by value":"c-callvalue.html",
+  "Call by reference":"c-callref.html", "링크드 리스트":"c-linkedlist.html" };
+const DATA = [
+  { m:1, track:"c", title:"C언어", sub:"프로그래밍 기초 문법", weeks:[
+    { items:[["변수, 상수","데이터를 저장하는 변수와 변하지 않는 값인 상수"],["자료형","자료형의 종류"],["연산자","기본 연산 (+, -, /, %)"],["입/출력","입력 및 출력"],["조건문","if, switch 조건문"]] },
+    { items:[["반복문","for, while, do while 반복문"],["2진법","10진법과 2진법의 차이"],["메모리","메모리의 구조"],["배열","배열의 구조"]] },
+    { items:[["문자열","문자열과 문자열 함수 학습 및 활용"],["디버거","디버거를 사용해 버그 찾기"],["함수","함수의 이해와 작성"]] },
+    { project:true, items:[["랜덤","랜덤한 수 생성"],["가위바위보 게임 1","가위·바위·보를 선택해 컴퓨터와 대결"],["가위바위보 게임 2","배열과 함수를 활용해 보기 좋게 완성"]] },
+  ]},
+  { m:2, track:"c", title:"C언어 2", sub:"포인터와 자료구조", weeks:[
+    { items:[["포인터 1","포인터에 대한 이해"],["포인터 2","포인터의 활용"],["Call by value","값을 복제해 전달하는 개념"],["Call by reference","주소를 참조해 전달하는 개념"],["구조체","구조체로 데이터 형식 만들기"]] },
+    { project:true, items:[["링크드 리스트","앞서 배운 내용을 활용해 링크드 리스트 구현"]] },
+    { items:[["전체 복습","C언어 전체 내용 복습"]] },
+    { items:[["코딩 문제 풀이","각자 수준에 맞는 문제로 부족한 부분 보완"]] },
+  ]},
+  { m:3, track:"cs", title:"Unity로 C# 1", sub:"유니티 환경에서 배우는 C# 기초", weeks:[
+    { items:[["유니티","유니티에 대한 이해"],["클래스","C#의 클래스 이해"],["연산자","기본 연산 (+, -, /, %)"],["문자열","string 학습 및 활용"]] },
+    { items:[["변수 및 입출력","변수와 입출력"],["조건문","조건문 학습"],["반복문","반복문 학습"],["배열","배열의 구조"]] },
+    { items:[["함수와 메소드","함수와 메소드의 차이점"],["오브젝트","게임 오브젝트의 이동·회전·크기 조절"],["오브젝트 생성","코드로 오브젝트 생성 및 복제"]] },
+    { project:true, items:[["UI","UGUI를 통한 텍스트 출력"],["랜덤","유니티의 랜덤"],["FPS (frame per second)","프레임에 대한 이해"],["리듬 게임",["랜덤 노트 생성","키보드 입력","노트 판정하기","판정에 따른 점수 추가"]]] },
+  ]},
+  { m:4, track:"cs", title:"Unity로 C# 2", sub:"객체지향 프로그래밍", weeks:[
+    { items:[["생성자","클래스의 생성자"],["소멸자","클래스의 소멸자"],["가비지 컬렉터","C# 메모리 관리 방식인 가비지 컬렉터 이해"]] },
+    { items:[["상속","객체지향을 위한 상속"],["접근 지정자, 캡슐화","접근 제한 지정자로 캡슐화 개념 학습"],["연산자 오버로딩, 다형성","연산자 오버로딩과 다형성 개념"]] },
+    { items:[["함수 오버로딩","함수 오버로딩"],["오버라이딩","오버라이딩"],["가상 메서드, 추상 메서드","virtual 메서드와 abstract 메서드·추상 클래스"]] },
+    { items:[["인터페이스","인터페이스 사용법"],["프로퍼티","C#의 프로퍼티 이해"]] },
+  ]},
+  { m:5, track:"u", title:"유니티 1", sub:"2D 게임 제작", weeks:[
+    { project:true, items:[["엔진 구조","유니티 엔진 구조"],["피하기 게임 (2D) 1/2",["박스, 구체 생성 및 제어","키보드 입력과 제어 방법","콜라이더 및 트리거","프리팹 개념","소스코드로 오브젝트 제어"]]] },
+    { project:true, items:[["피하기 게임 (2D) 2/2",["떨어지는 오브젝트의 속도·크기 다양화","이동속도 업 아이템 구현"]]] },
+    { project:true, items:[["종스크롤 슈팅 게임 (2D) 1/2",["플레이어와 적의 체력 설정","현재 체력, 점수 UI 표시"]]] },
+    { project:true, items:[["종스크롤 슈팅 게임 (2D) 2/2",["등장하는 적의 패턴 추가","플레이어블 캐릭터 추가"]]] },
+  ]},
+  { m:6, track:"u", title:"유니티 2", sub:"UI 게임과 3D 물리 기초", weeks:[
+    { project:true, items:[["클리커 게임 (UI) 1/2",["각종 UI 제어 방법","클릭 및 제어 방법","클릭 시 효과 이펙트"]]] },
+    { project:true, items:[["클리커 게임 (UI) 2/2",["인컴 기능 추가","미니 게임 추가 (추가 재화)"]]] },
+    { project:true, items:[["Roll a Ball (3D) 1/2",["3D 기초","Rigidbody 제어 및 이론"]]] },
+    { project:true, items:[["Roll a Ball (3D) 2/2",["점프대 추가","핀볼 만들기"]]] },
+  ]},
+  { m:7, track:"u", title:"유니티 3", sub:"3D FPS와 AI 도구 활용", weeks:[
+    { project:true, items:[["FPS (3D) 1/3",["마우스로 화면 제어","총과 총알 구현","레이캐스트를 이용한 저격총 구현"]]] },
+    { project:true, items:[["FPS (3D) 2/3",["샷건 추가","AI 적 추가","NavMesh로 플레이어 추적"]]] },
+    { project:true, items:[["FPS (3D) 3/3","마무리 및 완성"]] },
+    { items:[["Cursor AI 활용","AI를 Unity와 연동해 코드 생성·적용, 생산성 향상"]] },
+  ]},
+  { m:8, track:"u", title:"유니티 4", sub:"멀티플레이와 최종 제작", weeks:[
+    { items:[["멀티 (Photon) 1/2",["네트워크 이해","포톤의 이해","방(Room) 만들기","큐브 동기화"]]] },
+    { items:[["멀티 (Photon) 2/2",["포톤 심화","포톤 메시지 보내기","포톤 씬 전환","시간 동기화"]]] },
+    { project:true, items:[["간단한 게임 제작 1/2","배운 내용으로 게임 제작"]] },
+    { project:true, items:[["간단한 게임 제작 2/2","배운 내용으로 게임 완성"]] },
+  ]},
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const desc = d => Array.isArray(d) ? "<ul>"+d.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>" : esc(d);
+const name = (mo, n) => (mo.track==="c" && LINKS[n]) ? `<a href="${LINKS[n]}">${esc(n)}</a>` : esc(n);
+
+document.getElementById("track").innerHTML = DATA.map(mo =>
+  `<a class="t-${mo.track}" href="#m${mo.m}"><span class="mn">${pad(mo.m)}</span><span class="mt">${esc(mo.title)}</span></a>`).join("");
+
+document.getElementById("months").innerHTML = DATA.map(mo => `
+  <section class="month t-${mo.track}" id="m${mo.m}">
+    <div class="mhead">
+      <div class="mnum">${pad(mo.m)}</div>
+      <div class="mtitle"><h2>${mo.m}개월차 · ${esc(mo.title)}</h2><span>${esc(mo.sub||"")}</span></div>
+      <span class="chip">${TRACKS[mo.track]}</span>
+    </div>
+    ${mo.weeks.map((wk,i) => `
+      <div class="week${wk.project?" proj":""}">
+        <div class="wlabel"><span>${i+1}주차</span>${wk.project?'<span class="pj">실습</span>':""}</div>
+        <ul class="topics">${wk.items.map(([n,d]) => `<li><span class="tn">${name(mo,n)}</span><span class="td">${desc(d)}</span></li>`).join("")}</ul>
+      </div>`).join("")}
+  </section>`).join("");
+</script>
+
+</body>
+</html>

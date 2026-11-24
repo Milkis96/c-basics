@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>C 기초 · 자료형</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: 변수 자료와 같은 한 칼럼 틀. 이번 주제의 그림은 "바이트 칸 수로 크기가 다른 상자" */
+:root{
+  --bg:#f3f6fa; --surface:#ffffff; --fg:#1d2533; --muted:#5c6779; --line:#dde3ec;
+  --accent:#2d63a6; --accent-soft:#e3edf9;
+  --tag:#f5c64a; --tag-fg:#3a2c00; --tag-soft:#fdf4d9;
+  --t-char:#c0577e; --t-int:#2d63a6; --t-float:#1d7357; --t-double:#7a5bb0;
+  --code-bg:#1d2430; --code-fg:#e3e8ef; --code-dim:#8793a3; --code-kw:#8cc2f0; --code-num:#f2b77a; --code-str:#9fd6a8;
+  --ok:#1d7357; --ok-soft:#e1f3ea; --bad:#b23b3b; --bad-soft:#fae5e5;
+  --font-head:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;
+  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2029; --fg:#e7ebf1; --muted:#9ba6b6; --line:#2b3340;
+  --accent:#82b2ea; --accent-soft:#1c2a3c; --tag:#e9bb45; --tag-fg:#2a2000; --tag-soft:#30291a;
+  --t-char:#e88aae; --t-int:#82b2ea; --t-float:#6cc9a3; --t-double:#b39ae6;
+  --code-bg:#0d1117; --ok:#6cc9a3; --ok-soft:#18302a; --bad:#f08a8a; --bad-soft:#3a1f22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2029; --fg:#e7ebf1; --muted:#9ba6b6; --line:#2b3340;
+  --accent:#82b2ea; --accent-soft:#1c2a3c; --tag:#e9bb45; --tag-fg:#2a2000; --tag-soft:#30291a;
+  --t-char:#e88aae; --t-int:#82b2ea; --t-float:#6cc9a3; --t-double:#b39ae6;
+  --code-bg:#0d1117; --ok:#6cc9a3; --ok-soft:#18302a; --bad:#f08a8a; --bad-soft:#3a1f22; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.75}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:14px;margin-bottom:24px}
+.crumb{font-size:13px;color:var(--muted);font-weight:600}
+h1{margin:0;font-family:var(--font-head);font-weight:400;font-size:clamp(34px,7vw,50px);line-height:1.2;text-wrap:balance}
+h1 .sub{display:block;font-size:.5em;color:var(--accent)}
+.lead{margin:0;color:var(--muted);max-width:60ch;font-size:17.5px}
+
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:grid;gap:12px;margin:6px 0 30px}
+.byterow{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:12px;align-items:center}
+.byterow .nm{font-family:var(--font-mono);font-weight:700;font-size:17px;color:var(--tc)}
+.cells{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.cells i{width:30px;height:30px;border-radius:6px;background:var(--tc);opacity:.85}
+.cells span{font-size:14px;color:var(--muted);margin-left:8px}
+.hero .cap{font-size:14px;color:var(--muted);margin:0}
+.k-char{--tc:var(--t-char)} .k-int{--tc:var(--t-int)} .k-float{--tc:var(--t-float)} .k-double{--tc:var(--t-double)}
+
+nav.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 40px}
+nav.steps a{font-size:14.5px;text-decoration:none;color:var(--fg);padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.steps a b{color:var(--accent);margin-right:5px}
+nav.steps a:hover,nav.steps a:focus-visible{border-color:var(--accent);outline:none}
+
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:400;font-size:28px;margin:0 0 16px;text-wrap:balance}
+h2 .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:20px;flex-shrink:0}
+h3{font-family:var(--font-head);font-weight:400;font-size:21px;margin:26px 0 10px}
+p{margin:0 0 14px;max-width:64ch}
+.key{background:var(--tag-soft);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-size:20px;font-weight:700;line-height:1.5}
+.key small{display:block;font-weight:400;font-size:15.5px;color:var(--muted);margin-top:6px}
+code.i{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px}
+
+.story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.story > div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.story .who{font-weight:700;margin-bottom:4px}
+.story .bad{color:var(--bad)} .story .good{color:var(--ok)}
+.story .res{font-size:15px;color:var(--muted);margin-top:4px}
+@media (max-width:600px){.story{grid-template-columns:1fr}}
+
+pre.code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;line-height:1.7;padding:16px 18px;border-radius:12px;overflow-x:auto;margin:0 0 16px}
+.c{color:var(--code-dim)} .k{color:var(--code-kw)} .nm{color:var(--code-num)} .s{color:var(--code-str)}
+
+.parts{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:4px 0 18px}
+.part{display:grid;justify-items:center;gap:6px}
+.part code{font-family:var(--font-mono);font-size:24px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:2px solid var(--line)}
+.part span{font-size:13.5px;color:var(--muted);font-weight:600}
+.part.p-kind code{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);border-width:3px}
+.part.p-name code{background:var(--tag);border-color:var(--tag);color:var(--tag-fg)}
+.part.p-val code{color:var(--code-num);border-color:var(--code-num)}
+
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+.way-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.way-head h3{margin:0}
+.badge{font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent);color:var(--surface)}
+.way pre.code,.way p{margin:0}
+
+/* 자료형 카드 */
+.kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
+@media (max-width:600px){.kinds{grid-template-columns:1fr}}
+.kd{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--tc);border-radius:14px;padding:14px 18px;display:grid;gap:6px;align-content:start}
+.kd-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.kd .t{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--tc)}
+.kd .sz{font-size:13px;font-weight:700;color:var(--muted)}
+.kd .w{font-weight:700;font-size:18px}
+.kd .e{font-size:15px;color:var(--muted)}
+.kd pre{margin:4px 0 0;font-family:var(--font-mono);font-size:14px;background:var(--bg);padding:7px 11px;border-radius:8px;overflow-x:auto}
+.kd .rule{font-size:14px;background:var(--bg);border-radius:8px;padding:6px 11px}
+
+.tablewrap{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--bg)}
+td.m{font-family:var(--font-mono)}
+.secret{background:var(--surface);border:2px dashed var(--tag);border-radius:16px;padding:16px 20px;margin:0 0 14px}
+.secret h3{margin:0 0 8px}
+.secret pre.code{margin:8px 0 8px}
+
+/* 상자 골라 넣기 실험실 */
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.lab-pick{padding:16px 18px;display:grid;gap:12px;border-bottom:1px solid var(--line)}
+.lab-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lab-row .lbl{font-size:13px;font-weight:700;color:var(--muted);width:6.5em}
+.opt{font-family:var(--font-mono);font-size:16px;font-weight:700;padding:7px 15px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.lab-res{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:0}
+@media (max-width:620px){.lab-res{grid-template-columns:1fr}}
+.lab-code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;padding:14px 18px;white-space:pre;overflow-x:auto;min-width:0;line-height:1.8}
+.lab-out{padding:14px 18px;display:grid;gap:10px;align-content:start;min-width:0}
+.lab-out .lbl{font-size:13px;font-weight:700;color:var(--muted)}
+.screen{font-family:var(--font-mono);font-size:18px;background:var(--bg);border-radius:10px;padding:8px 12px;min-height:44px}
+.verdict{display:inline-block;font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;width:max-content}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)} .verdict.chg{background:var(--bad-soft);color:var(--bad)}
+.lab-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px}
+.q-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.q-head b{font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--accent)}
+.q-type{font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.q-type.hard{background:var(--tag-soft);color:var(--tag-fg)}
+.q p{margin-bottom:10px}
+.q ul{margin:0 0 10px;padding-left:22px}
+details{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+summary:focus-visible{outline:3px solid var(--tag);outline-offset:2px;border-radius:4px}
+details .ans{padding-top:8px}
+details .ans p{margin-bottom:6px}
+.trap{font-size:14.5px;background:var(--tag-soft);border-radius:10px;padding:8px 14px;margin-top:6px}
+
+.err{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.err-sym{padding:14px 20px;background:var(--bad-soft);display:grid;gap:4px}
+.err-sym .s1{font-weight:700;color:var(--bad);font-size:17.5px}
+.err-sym .msg{font-family:var(--font-mono);font-size:13px;color:var(--fg);opacity:.85;word-break:break-all}
+.err-body{padding:14px 20px;display:grid;gap:8px}
+.err-body .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.err-body .row b{color:var(--muted);font-size:14.5px;padding-top:2px}
+.err-body .row > span{min-width:0}
+.err-body pre.code{margin:6px 0 0;font-size:14px;padding:10px 14px}
+@media (max-width:480px){.err-body .row{grid-template-columns:1fr;gap:0}}
+
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px}
+.lk .when{font-size:13px;color:var(--accent);font-weight:700}
+.lk .what{font-family:var(--font-head);font-size:19px}
+.lk .why{font-size:14.5px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="crumb">1개월차 · 1주차 · C언어</div>
+  <h1>자료형<span class="sub">값의 종류 정하기</span></h1>
+  <p class="lead">숫자인지, 소수인지, 글자인지. 변수를 만들 때 값의 종류를 먼저 정해 주면 컴퓨터가 딱 맞는 크기의 상자를 준비해요.</p>
+</header>
+
+<div class="hero" aria-label="자료형마다 상자 크기가 다른 그림. 한 칸이 1바이트">
+  <div class="byterow k-char"><span class="nm">char</span><div class="cells"><i></i><span>1칸</span></div></div>
+  <div class="byterow k-int"><span class="nm">int</span><div class="cells"><i></i><i></i><i></i><i></i><span>4칸</span></div></div>
+  <div class="byterow k-float"><span class="nm">float</span><div class="cells"><i></i><i></i><i></i><i></i><span>4칸</span></div></div>
+  <div class="byterow k-double"><span class="nm">double</span><div class="cells"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><span>8칸</span></div></div>
+  <p class="cap">한 칸이 1바이트예요. 자료형에 따라 상자 크기가 달라요.</p>
+</div>
+
+<nav class="steps" aria-label="학습 단계">
+  <a href="#s1"><b>1</b>자료형이란?</a><a href="#s2"><b>2</b>왜 필요해?</a><a href="#s3"><b>3</b>쓰는 법</a><a href="#s4"><b>4</b>자료형 네 가지</a><a href="#s5"><b>5</b>상자에 넣어 보기</a><a href="#s6"><b>6</b>문제 풀기</a><a href="#s7"><b>7</b>이럴 땐?</a><a href="#s8"><b>8</b>다음에 배울 것</a>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>자료형이란?</h2>
+  <div class="key">자료형은 값의 종류를 정해 주는 거예요.<small>변수가 "값에 이름 짓기"라면, 자료형은 "그 값이 어떤 종류인지 알려 주기"예요.</small></div>
+  <p>우리는 <b>3</b>, <b>3.5</b>, <b>'A'</b>를 보면 바로 정수, 소수, 글자인 걸 알아요. 하지만 컴퓨터는 미리 말해 주지 않으면 몰라요. 그래서 변수를 만들 때 맨 앞에 종류를 적어 줘요.</p>
+<pre class="code"><span class="k">int</span>   age    = <span class="nm">12</span>;      <span class="c">// 정수예요</span>
+<span class="k">float</span> height = <span class="nm">150.5f</span>;  <span class="c">// 소수예요</span>
+<span class="k">char</span>  grade  = <span class="s">'A'</span>;     <span class="c">// 글자 한 개예요</span></pre>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>왜 필요해?</h2>
+  <p>밥은 밥그릇에, 국은 국그릇에 담죠. 그릇이 맞지 않으면 넘치거나 흘러요. 값도 종류에 맞는 상자에 담아야 해요.</p>
+  <div class="story">
+    <div><div class="who bad">맞지 않는 상자</div><code class="i">int a = 3.7;</code><div class="res">정수 상자에는 소수점 아래가 안 들어가요. 0.7이 흘러 버리고 <b>3</b>만 남아요.</div></div>
+    <div><div class="who good">맞는 상자</div><code class="i">float a = 3.7f;</code><div class="res">소수 상자라서 <b>3.7</b>이 그대로 들어가요.</div></div>
+  </div>
+  <p>그리고 컴퓨터는 상자 크기를 아껴 써요. 글자 한 개에는 작은 상자(1칸), 정수에는 그보다 큰 상자(4칸)를 줘요. 종류를 알아야 크기를 정할 수 있어요.</p>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>쓰는 법</h2>
+  <p>자료형은 변수를 <b>새로 만들 때 맨 앞</b>에 써요. 변수 시간에 배운 모양 그대로예요.</p>
+  <div class="parts">
+    <div class="part p-kind"><code>float</code><span>자료형</span></div>
+    <div class="part p-name"><code>speed</code><span>이름</span></div>
+    <div class="part"><code>=</code><span>넣어라</span></div>
+    <div class="part p-val"><code>2.5f</code><span>값</span></div>
+    <div class="part"><code>;</code><span>끝!</span></div>
+  </div>
+  <p>값도 종류에 맞는 모양으로 써야 해요.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>종류</th><th>값 쓰는 모양</th><th>예시</th></tr></thead>
+    <tbody>
+      <tr><td>정수</td><td>그냥 숫자</td><td class="m">10, -3, 0</td></tr>
+      <tr><td>소수 (float)</td><td>점을 찍고 끝에 f</td><td class="m">3.5f, 0.1f</td></tr>
+      <tr><td>소수 (double)</td><td>점만 찍기</td><td class="m">3.5, 0.1</td></tr>
+      <tr><td>글자</td><td>작은따옴표로 감싸기</td><td class="m">'A', '7', '!'</td></tr>
+    </tbody></table></div>
+
+  <div class="way">
+    <div class="way-head"><span class="badge">printf</span><h3>화면에 보여 줄 때도 종류를 알려 줘요</h3></div>
+    <p>printf에서 <code class="i">%d</code> 같은 기호를 <b>서식 지정자</b>라고 해요. "여기에 이런 종류의 값이 들어간다"는 표시예요. 자료형과 짝을 맞춰야 제대로 보여요.</p>
+    <div class="tablewrap" style="margin:0"><table>
+      <thead><tr><th>자료형</th><th>짝꿍 기호</th><th>예시</th><th>화면</th></tr></thead>
+      <tbody>
+        <tr><td class="m">int</td><td class="m">%d</td><td class="m">printf("%d", 12);</td><td class="m">12</td></tr>
+        <tr><td class="m">float</td><td class="m">%f</td><td class="m">printf("%f", 3.5f);</td><td class="m">3.500000</td></tr>
+        <tr><td class="m">double</td><td class="m">%f</td><td class="m">printf("%f", 3.5);</td><td class="m">3.500000</td></tr>
+        <tr><td class="m">char</td><td class="m">%c</td><td class="m">printf("%c", 'A');</td><td class="m">A</td></tr>
+      </tbody></table></div>
+    <p><code class="i">%f</code>는 소수점 아래 6자리까지 보여 줘요. <code class="i">%.1f</code>라고 쓰면 한 자리만 보여 줘요. (3.5)</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>자료형 네 가지</h2>
+  <p>처음에는 이 네 가지만 알면 충분해요.</p>
+  <div class="kinds">
+    <div class="kd k-char"><div class="kd-top"><span class="t">char</span><span class="sz">1바이트</span></div><span class="w">글자 한 개</span><span class="e">등급, 반 이름, 키보드 한 글자</span><pre>char grade = 'A';</pre><span class="rule">작은따옴표 안에 <b>딱 한 글자</b>만</span></div>
+    <div class="kd k-int"><div class="kd-top"><span class="t">int</span><span class="sz">4바이트</span></div><span class="w">정수</span><span class="e">나이, 점수, 사과 개수</span><pre>int score = 90;</pre><span class="rule">약 -21억부터 21억까지 담을 수 있어요</span></div>
+    <div class="kd k-float"><div class="kd-top"><span class="t">float</span><span class="sz">4바이트</span></div><span class="w">소수</span><span class="e">키, 몸무게, 캐릭터 속도</span><pre>float speed = 2.5f;</pre><span class="rule">소수점 아래 6~7자리 정도까지 정확해요</span></div>
+    <div class="kd k-double"><div class="kd-top"><span class="t">double</span><span class="sz">8바이트</span></div><span class="w">더 정확한 소수</span><span class="e">원주율, 과학 계산</span><pre>double pi = 3.141592;</pre><span class="rule">float보다 두 배 커서 15자리 정도까지 정확해요</span></div>
+  </div>
+  <p><b>어떤 걸 고를까?</b> 개수나 점수처럼 딱 떨어지면 <code class="i">int</code>, 소수점이 필요하면 <code class="i">float</code>, 글자 한 개면 <code class="i">char</code>예요. double은 아주 정확한 계산이 필요할 때 써요.</p>
+
+  <div class="secret">
+    <h3>알아 두면 재밌는 비밀: char는 사실 숫자예요</h3>
+    <p>컴퓨터는 글자를 번호로 기억해요. 'A'는 65번, 'B'는 66번이에요. 이 번호표를 <b>아스키 코드</b>라고 해요.</p>
+<pre class="code"><span class="k">char</span> c = <span class="s">'A'</span>;
+printf(<span class="s">"%c"</span>, c);   <span class="c">// A  (글자로 보여 줘)</span>
+printf(<span class="s">"%d"</span>, c);   <span class="c">// 65 (번호로 보여 줘)</span></pre>
+    <p style="margin:0">그래서 char 상자에 숫자 넣기, int 상자에 글자 넣기가 가능해요. 아래 실험실에서 직접 해 보세요.</p>
+  </div>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>상자에 넣어 보기</h2>
+  <p>값과 상자를 골라 보세요. 어떤 상자에 넣느냐에 따라 들어가는 값이 달라져요.</p>
+  <div class="lab">
+    <div class="lab-pick">
+      <div class="lab-row" role="group" aria-label="넣을 값"><span class="lbl">넣을 값</span>
+        <button class="opt" type="button" id="v-100" data-v="100">100</button>
+        <button class="opt" type="button" id="v-37" data-v="3.7">3.7</button>
+        <button class="opt" type="button" id="v-A" data-v="A">'A'</button>
+      </div>
+      <div class="lab-row" role="group" aria-label="상자 종류"><span class="lbl">상자 종류</span>
+        <button class="opt" type="button" id="t-int" data-t="int">int</button>
+        <button class="opt" type="button" id="t-float" data-t="float">float</button>
+        <button class="opt" type="button" id="t-double" data-t="double">double</button>
+        <button class="opt" type="button" id="t-char" data-t="char">char</button>
+      </div>
+    </div>
+    <div class="lab-res">
+      <div class="lab-code" id="lab-code" aria-label="코드"></div>
+      <div class="lab-out">
+        <div class="lbl">화면에 나온 글자</div>
+        <div class="screen" id="lab-screen"></div>
+        <span class="verdict" id="lab-verdict"></span>
+        <div class="lab-note" id="lab-note" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>문제 풀기</h2>
+  <p>먼저 스스로 풀어 보고 정답을 열어 보세요. 3번부터는 머릿속으로 결과를 맞혀 보세요.</p>
+
+  <div class="q"><div class="q-head"><b>1번</b><span class="q-type">써 보기</span></div>
+    <p>키 152.3을 담는 변수 <code class="i">height</code>를 만들어 보세요.</p>
+    <details><summary>정답 보기</summary><div class="ans">
+<pre class="code"><span class="k">float</span> height = <span class="nm">152.3f</span>;</pre>
+      <p>소수라서 float예요. <code class="i">double height = 152.3;</code>도 정답이에요.</p></div></details></div>
+
+  <div class="q"><div class="q-head"><b>2번</b><span class="q-type">골라 보기</span></div>
+    <p>각각 어떤 자료형이 알맞을까요?</p>
+    <ul><li>우리 반 학생 수</li><li>몸무게 41.5kg</li><li>혈액형 A형의 'A'</li><li>게임 점수</li></ul>
+    <details><summary>정답 보기</summary><div class="ans">
+      <p>학생 수 <b>int</b>, 몸무게 <b>float</b>, 혈액형 <b>char</b>, 게임 점수 <b>int</b>예요. 사람 수처럼 반으로 나눌 수 없는 건 정수예요.</p></div></details></div>
+
+  <div class="q"><div class="q-head"><b>3번</b><span class="q-type">결과 맞히기</span></div>
+<pre class="code"><span class="k">char</span> c = <span class="s">'B'</span>;
+printf(<span class="s">"%d"</span>, c);</pre>
+    <details><summary>정답 보기</summary><div class="ans">
+      <p><b>66</b>이에요. <code class="i">%d</code>는 숫자로 보여 달라는 뜻이라 'B'의 번호인 66이 나와요. 'A'가 65니까 'B'는 66이에요.</p>
+      <div class="trap">많이 틀리는 답: B (%d와 %c를 헷갈려서)</div></div></details></div>
+
+  <div class="q"><div class="q-head"><b>4번</b><span class="q-type">틀린 것 찾기</span></div>
+    <p>잘못 쓴 것을 모두 골라 보세요.</p>
+<pre class="code"><span class="k">char</span> a = <span class="s">'A'</span>;
+<span class="k">char</span> b = <span class="s">"B"</span>;
+<span class="k">char</span> c = <span class="s">'CD'</span>;
+<span class="k">int</span>  d = <span class="nm">10</span>;
+<span class="k">float</span> e = <span class="nm">2.5f</span>;</pre>
+    <details><summary>정답 보기</summary><div class="ans">
+      <p><b>b</b>와 <b>c</b>예요. 글자 한 개는 <b>작은따옴표</b>로 감싸고(<code class="i">'B'</code>), 안에는 <b>딱 한 글자</b>만 넣어야 해요. 큰따옴표 <code class="i">"B"</code>는 글자 여러 개를 담는 문자열이라 다른 거예요. 문자열은 3주차에 배워요.</p></div></details></div>
+
+  <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div>
+<pre class="code"><span class="k">float</span> a = <span class="nm">7</span> / <span class="nm">2</span>;
+printf(<span class="s">"%f"</span>, a);</pre>
+    <details><summary>정답 보기</summary><div class="ans">
+      <p><b>3.000000</b>이에요. float 상자인데 왜 3.5가 아닐까요? <code class="i">7</code>과 <code class="i">2</code>가 둘 다 정수라서 컴퓨터가 <b>정수끼리 먼저 나눠요</b>. 정수 나눗셈은 몫만 남기니까 3이 되고, 그 3을 float 상자에 넣어서 3.0이 돼요.</p>
+      <p>3.5를 얻으려면 둘 중 하나를 소수로 써요.</p>
+<pre class="code"><span class="k">float</span> a = <span class="nm">7.0f</span> / <span class="nm">2</span>;   <span class="c">// 3.500000</span></pre>
+      <div class="trap">많이 틀리는 답: 3.500000 (상자가 float이면 계산도 소수로 할 거라고 생각해서)</div></div></details></div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>이럴 땐?</h2>
+  <p>자료형 때문에 자주 생기는 일이에요. 화면에 뜬 모습과 비슷한 걸 찾아보세요.</p>
+
+  <div class="err"><div class="err-sym"><span class="s1">0.000000이나 이상한 숫자가 나와요</span><span class="msg">warning C4477: 'printf' : 서식 문자열 '%d'에 'int' 형식의 인수가 필요하지만 ... 'double'입니다.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>자료형과 서식 지정자 짝이 안 맞아요. float 값을 <code class="i">%d</code>로, int 값을 <code class="i">%f</code>로 보여 달라고 했어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>int는 <code class="i">%d</code>, float·double은 <code class="i">%f</code>, char는 <code class="i">%c</code>로 짝을 맞춰요.<pre class="code"><span class="k">float</span> s = <span class="nm">2.5f</span>;
+printf(<span class="s">"%d"</span>, s);   <span class="c">// 틀림: 이상한 숫자</span>
+printf(<span class="s">"%f"</span>, s);   <span class="c">// 맞음: 2.500000</span></pre></span></div></div></div>
+
+  <div class="err"><div class="err-sym"><span class="s1">나눗셈 결과에서 소수점이 사라져요</span><span class="msg">7 / 2  →  3</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>정수끼리 나누면 몫만 남아요. 결과를 float 상자에 넣어도 이미 3이 된 뒤예요.</span></div>
+      <div class="row"><b>어떻게?</b><span>둘 중 하나를 소수로 써요. <code class="i">7.0f / 2</code></span></div></div></div>
+
+  <div class="err"><div class="err-sym"><span class="s1">float에 소수를 넣었더니 경고가 나요</span><span class="msg">warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>소수 뒤에 <code class="i">f</code>가 없으면 컴퓨터는 double(8칸)로 생각해요. 그걸 float(4칸)에 넣으니 "잘릴 수도 있다"고 알려 주는 거예요.</span></div>
+      <div class="row"><b>어떻게?</b><span>float에 넣는 소수 뒤에는 <code class="i">f</code>를 붙여요. <code class="i">float h = 152.3f;</code></span></div></div></div>
+
+  <div class="err"><div class="err-sym"><span class="s1">숫자를 더했는데 갑자기 음수가 돼요</span><span class="msg">2147483647 + 1  →  -2147483648</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>int 상자에는 약 21억까지만 들어가요. 넘치면 숫자가 한 바퀴 돌아서 가장 작은 음수가 돼요. 이걸 <b>오버플로</b>라고 해요.</span></div>
+      <div class="row"><b>어떻게?</b><span>아주 큰 수가 필요하면 더 큰 상자인 <code class="i">long long</code>(8바이트)을 써요.</span></div></div></div>
+
+  <div class="err"><div class="err-sym"><span class="s1">char에 글자를 넣었는데 경고가 나거나 엉뚱한 글자가 나와요</span><span class="msg">char b = "B";   ·   char c = 'CD';</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>큰따옴표는 문자열이라 char 상자에 안 맞아요. 작은따옴표 안에 두 글자를 넣어도 한 글자만 남아요.</span></div>
+      <div class="row"><b>어떻게?</b><span>char에는 작은따옴표 안에 한 글자만. <code class="i">char b = 'B';</code></span></div></div></div>
+  <p style="font-size:14px;color:var(--muted)">에러 문구는 Visual Studio 기준이에요. 버전에 따라 조금 다를 수 있어요.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>다음에 배울 것</h2>
+  <div class="links">
+    <div class="lk"><span class="when">1주차</span><span class="what">연산자</span><span class="why">정수 나눗셈과 나머지(%)를 자세히</span></div>
+    <div class="lk"><span class="when">1주차</span><span class="what">입력</span><span class="why">scanf도 %d, %f, %c 짝꿍을 써요</span></div>
+    <div class="lk"><span class="when">2주차</span><span class="what">2진법</span><span class="why">1바이트는 왜 8비트? int는 왜 21억까지?</span></div>
+    <div class="lk"><span class="when">3주차</span><span class="what">문자열</span><span class="why">큰따옴표 "Hello"의 정체</span></div>
+  </div>
+</section>
+
+<footer>C 기초 학습 자료 시범본 · 자료형 · 이전: 변수</footer>
+</div>
+
+<script>
+(function(){
+  const VALS = { "100":{src:"100"}, "3.7":{src:"3.7"}, "A":{src:"'A'"} };
+  const FMT = { int:"%d", float:"%f", double:"%f", char:"%c" };
+  // [화면 출력, 값이 그대로인가, 설명]
+  const R = {
+    "100":{ int:["100",1,"정수를 정수 상자에. 딱 맞아요."],
+            float:["100.000000",1,"정수를 소수 상자에 넣으면 100.0이 돼요. 값은 같아요. %f는 소수점 아래 6자리까지 보여 줘요."],
+            double:["100.000000",1,"double도 소수 상자라서 100.0이 돼요."],
+            char:["d",0,"char는 글자를 번호로 기억해요. 100번 글자는 소문자 d예요. 그래서 d가 나와요."] },
+    "3.7":{ int:["3",0,"정수 상자에는 소수점 아래가 안 들어가요. 0.7은 버려지고 3만 남아요. 반올림이 아니에요."],
+            float:["3.700000",1,"소수를 소수 상자에. 딱 맞아요. (float에 넣을 땐 3.7f라고 쓰는 게 정석이에요.)"],
+            double:["3.700000",1,"소수를 더 정확한 소수 상자에. 딱 맞아요."],
+            char:["(안 보이는 글자)",0,"3.7은 3이 되고, 3번 글자는 화면에 보이지 않는 특수 글자예요. 소수는 char에 넣으면 안 돼요."] },
+    "A":  { int:["65",0,"'A'의 번호는 65예요. 정수 상자에는 번호가 들어가요."],
+            float:["65.000000",0,"번호 65가 소수 상자에 들어가서 65.0이 돼요."],
+            double:["65.000000",0,"번호 65가 소수 상자에 들어가서 65.0이 돼요."],
+            char:["A",1,"글자를 글자 상자에. 딱 맞아요."] }
+  };
+  let v = "3.7", t = "int";
+  const $ = id => document.getElementById(id);
+  const esc = s => s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  function valHtml(src, type){
+    let s = src;
+    if(type === "float" && src !== "'A'") s = src.includes(".") ? src + "f" : src;
+    return src === "'A'" ? '<span class="s">' + esc(s) + '</span>' : '<span class="nm">' + esc(s) + '</span>';
+  }
+  function render(){
+    document.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+    document.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
+    const r = R[v][t];
+    $('lab-code').innerHTML =
+      '<span class="k">' + t + '</span> x = ' + valHtml(VALS[v].src, t) + ';\n' +
+      'printf(<span class="s">"' + FMT[t] + '"</span>, x);';
+    $('lab-screen').textContent = r[0];
+    const vd = $('lab-verdict');
+    vd.className = 'verdict ' + (r[1] ? 'ok' : 'chg');
+    vd.textContent = r[1] ? '딱 맞는 상자' : '값이 바뀌었어요';
+    $('lab-note').textContent = r[2];
+  }
+  document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { v = b.dataset.v; render(); });
+  document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { t = b.dataset.t; render(); });
+  render();
+})();
+</script>
+
+</body>
+</html>

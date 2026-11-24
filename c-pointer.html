@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>C 기초 · 포인터</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: C 기초 학습 자료 공통 틀. 한 칼럼, 강의 8단계 섹션, 이름표 상자 그림 */
+:root{--bg:#f3f6fa;--surface:#ffffff;--fg:#1d2533;--muted:#5c6779;--line:#dde3ec;--accent:#2d63a6;--accent-soft:#e3edf9;--tag:#f5c64a;--tag-fg:#3a2c00;--tag-soft:#fdf4d9;--code-bg:#1d2430;--code-fg:#e3e8ef;--code-dim:#8793a3;--code-kw:#8cc2f0;--code-num:#f2b77a;--code-str:#9fd6a8;--ok:#1d7357;--ok-soft:#e1f3ea;--bad:#b23b3b;--bad-soft:#fae5e5;--font-head:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;--font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.75}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:14px;margin-bottom:24px}
+.crumb{font-size:13px;color:var(--muted);font-weight:600}
+h1{margin:0;font-family:var(--font-head);font-weight:400;font-size:clamp(34px,7vw,50px);line-height:1.2;text-wrap:balance}
+h1 .sub{display:block;font-size:.5em;color:var(--accent)}
+.lead{margin:0;color:var(--muted);max-width:60ch;font-size:17.5px}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;margin:6px 0 30px}
+.hero .eq{font-family:var(--font-head);font-size:22px;color:var(--muted)}
+.chip{font-family:var(--font-mono);font-size:26px;font-weight:700;padding:8px 18px;border-radius:14px;background:var(--accent-soft);color:var(--accent)}
+.chip.y{background:var(--tag);color:var(--tag-fg)}
+.named{display:grid;justify-items:center;gap:6px}
+.nametag{font-family:var(--font-head);font-size:19px;background:var(--tag);color:var(--tag-fg);padding:2px 16px;border-radius:8px;transform:rotate(-3deg)}
+.cell{font-family:var(--font-mono);font-size:24px;font-weight:700;min-width:80px;text-align:center;padding:10px 14px;border:3px solid var(--accent);border-radius:14px;background:var(--surface)}
+.named small{font-size:12.5px;color:var(--muted);font-family:var(--font-mono)}
+nav.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 40px}
+nav.steps a{font-size:14.5px;text-decoration:none;color:var(--fg);padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.steps a b{color:var(--accent);margin-right:5px}
+nav.steps a:hover,nav.steps a:focus-visible{border-color:var(--accent);outline:none}
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:400;font-size:28px;margin:0 0 16px;text-wrap:balance}
+h2 .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:20px;flex-shrink:0}
+h3{font-family:var(--font-head);font-weight:400;font-size:21px;margin:26px 0 10px}
+p{margin:0 0 14px;max-width:64ch}
+.key{background:var(--tag-soft);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-size:20px;font-weight:700;line-height:1.5}
+.key small{display:block;font-weight:400;font-size:15.5px;color:var(--muted);margin-top:6px}
+code.i{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px}
+.story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.story>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.story .who{font-weight:700;margin-bottom:4px}.story .bad{color:var(--bad)}.story .good{color:var(--ok)}
+.story .res{font-size:15px;color:var(--muted);margin-top:4px}
+@media (max-width:600px){.story{grid-template-columns:1fr}}
+pre.code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;line-height:1.7;padding:16px 18px;border-radius:12px;overflow-x:auto;margin:0 0 16px}
+.c{color:var(--code-dim)}.k{color:var(--code-kw)}.nm{color:var(--code-num)}.s{color:var(--code-str)}
+.parts{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:4px 0 18px}
+.part{display:grid;justify-items:center;gap:6px}
+.part code{font-family:var(--font-mono);font-size:22px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:2px solid var(--line)}
+.part span{font-size:13.5px;color:var(--muted);font-weight:600}
+.part.p-a code{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.part.p-b code{background:var(--tag);border-color:var(--tag);color:var(--tag-fg)}
+.part.p-c code{color:var(--code-num);border-color:var(--code-num)}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+.way.main{border:2px solid var(--accent)}
+.way-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.way-head h3{margin:0}
+.badge{font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent);color:var(--surface)}
+.way pre.code,.way p,.way .tablewrap{margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.card .t{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--accent)}
+.card .w{font-weight:700}.card .e{font-size:15px;color:var(--muted)}
+.card pre{margin:4px 0 0;font-family:var(--font-mono);font-size:14px;background:var(--bg);padding:7px 11px;border-radius:8px;overflow-x:auto}
+.tablewrap{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--bg)}
+td.m{font-family:var(--font-mono)}
+.secret{background:var(--surface);border:2px dashed var(--tag);border-radius:16px;padding:16px 20px;margin:0 0 14px}
+.secret h3{margin:0 0 8px}.secret pre.code{margin:8px 0}
+.tracer{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.tr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:620px){.tr-body{grid-template-columns:1fr}}
+.tr-code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:14.5px;padding:14px 0;overflow-x:auto;min-width:0}
+.tr-line{padding:3px 16px;white-space:pre;display:flex;gap:12px;border-left:4px solid transparent}
+.tr-line .ln{color:var(--code-dim);width:1.4em;text-align:right;flex-shrink:0}
+.tr-line.on{background:rgba(140,194,240,.18);border-left-color:var(--tag)}
+.tr-state{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
+.lbl{font-size:13px;color:var(--muted);font-weight:700}
+.tr-mem{display:flex;gap:16px;flex-wrap:wrap;min-height:100px;align-items:flex-end}
+.tr-mem .cell{font-size:20px;min-width:64px}
+.tr-mem .named.changed>.cell,.tr-mem .named.changed .rec,.tr-mem .named.changed .arr{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+.arr{display:flex;gap:4px;flex-wrap:wrap}.arr .ac{display:grid;justify-items:center;gap:2px}
+.arr .cell{min-width:48px;font-size:18px;padding:8px}
+.arr small{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.rec{border:3px solid var(--accent);border-radius:14px;background:var(--surface);padding:8px 14px;font-family:var(--font-mono);font-size:15px;display:grid;gap:2px}
+.empty{color:var(--muted);font-size:15px}
+.tr-out{font-family:var(--font-mono);font-size:15px;background:var(--bg);border-radius:10px;padding:8px 12px;min-height:64px;white-space:pre-wrap}
+.tr-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px;min-height:50px}
+.tr-ctrl{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.tr-ctrl .pos{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+button{font-family:var(--font-body);font-size:15px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:14px;margin-bottom:16px}
+.lab-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lab label{font-weight:700;font-size:14.5px;min-width:7em}
+.lab input[type=range]{accent-color:var(--accent);flex:1;min-width:140px}
+.lab .val{font-family:var(--font-mono);font-weight:700;font-size:18px;min-width:2em}
+.lab pre.code{margin:0}
+.screen{font-family:var(--font-mono);font-size:17px;background:var(--bg);border-radius:10px;padding:8px 12px}
+.lab-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px}
+.q-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.q-head b{font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--accent)}
+.q-type{font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.q-type.hard{background:var(--tag-soft);color:var(--tag-fg)}
+.q p{margin-bottom:10px}.q ul{margin:0 0 10px;padding-left:22px}
+details{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details .ans{padding-top:8px}details .ans p{margin-bottom:6px}
+.trap{font-size:14.5px;background:var(--tag-soft);border-radius:10px;padding:8px 14px;margin-top:6px}
+.err{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.err-sym{padding:14px 20px;background:var(--bad-soft);display:grid;gap:4px}
+.err-sym .s1{font-weight:700;color:var(--bad);font-size:17.5px}
+.err-sym .msg{font-family:var(--font-mono);font-size:13px;color:var(--fg);opacity:.85;word-break:break-all}
+.err-body{padding:14px 20px;display:grid;gap:8px}
+.err-body .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.err-body .row b{color:var(--muted);font-size:14.5px;padding-top:2px}
+.err-body .row>span{min-width:0}
+.err-body pre.code{margin:6px 0 0;font-size:14px;padding:10px 14px}
+@media (max-width:480px){.err-body .row{grid-template-columns:1fr;gap:0}}
+.note-small{font-size:14px;color:var(--muted)}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px}
+.lk .when{font-size:13px;color:var(--accent);font-weight:700}
+.lk .what{font-family:var(--font-head);font-size:19px}
+.lk .why{font-size:14.5px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.ptr-pic{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
+.ptr-pic .note{font-family:var(--font-mono);font-size:18px;background:var(--tag-soft);border:2px dashed var(--tag);border-radius:10px;padding:10px 14px;transform:rotate(-2deg)}
+.ptr-pic .arrow{font-family:var(--font-head);font-size:26px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="crumb">2개월차 · 1주차 · C언어</div>
+  <h1>포인터<span class="sub">주소를 적어 둔 쪽지</span></h1>
+  <p class="lead">값 대신 "값이 있는 곳의 주소"를 저장하는 변수예요. 보물 지도처럼, 쪽지에 적힌 주소를 따라가면 진짜 값을 만날 수 있어요.</p>
+</header>
+
+<div class="hero" aria-label="p라는 쪽지에 1000번이 적혀 있고, 1000번 사물함 a에 10이 들어 있어요">
+  <div class="ptr-pic">
+    <div class="named"><span class="nametag">p</span><span class="note">1000번으로 가!</span><small>포인터</small></div>
+    <span class="arrow">→</span>
+    <div class="named"><span class="nametag">a</span><span class="cell">10</span><small>주소 1000</small></div>
+  </div>
+</div>
+
+<nav class="steps" aria-label="학습 단계">
+  <a href="#s1"><b>1</b>포인터란?</a><a href="#s2"><b>2</b>왜 필요해?</a><a href="#s3"><b>3</b>쓰는 법</a><a href="#s4"><b>4</b>&amp;와 *</a><a href="#s5"><b>5</b>쪽지 따라가기</a><a href="#s6"><b>6</b>문제 풀기</a><a href="#s7"><b>7</b>이럴 땐?</a><a href="#s8"><b>8</b>다음에 배울 것</a>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>포인터란?</h2>
+  <div class="key">포인터는 주소를 담는 변수예요.<small>보통 변수는 값을 담고, 포인터는 "그 값이 어디 있는지"를 담아요.</small></div>
+  <p>메모리 시간에 모든 변수는 번호(주소)가 붙은 사물함에 산다고 배웠어요. 포인터는 그 사물함 번호를 적어 둔 <b>쪽지</b>예요. 쪽지를 들고 가면 그 사물함을 열어 값을 보거나 바꿀 수 있어요.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>왜 필요해?</h2>
+  <div class="cards">
+    <div class="card"><span class="w">함수에서 원본 바꾸기</span><span class="e">함수에는 값의 복사본이 가요. 주소를 넘기면 원본을 직접 바꿀 수 있어요.</span></div>
+    <div class="card"><span class="w">큰 데이터 빨리 넘기기</span><span class="e">큰 상자를 통째로 복사하는 대신 주소 쪽지만 건네요.</span></div>
+    <div class="card"><span class="w">사실 이미 썼어요</span><span class="e"><code class="i">scanf_s("%d", &amp;n)</code>의 &amp;n이 바로 주소예요.</span></div>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>쓰는 법</h2>
+  <div class="way">
+    <div class="way-head"><span class="badge">만들기</span><h3>포인터 변수 선언</h3></div>
+    <div class="parts">
+      <div class="part p-a"><code>int *</code><span>int가 있는 주소를 담아요</span></div>
+      <div class="part p-b"><code>p</code><span>이름</span></div>
+      <div class="part"><code>=</code><span>넣어라</span></div>
+      <div class="part p-c"><code>&amp;a</code><span>a의 주소</span></div>
+      <div class="part"><code>;</code><span>끝!</span></div>
+    </div>
+  </div>
+  <div class="way main">
+    <div class="way-head"><span class="badge">따라가기</span><h3>쪽지의 주소로 가서 값 보기, 바꾸기</h3></div>
+<pre class="code">int a = 10;
+int *p = &amp;a;       // p에 a의 주소를 적어요
+
+printf("%d\n", *p);  // 10  : p가 가리키는 곳의 값
+*p = 20;             // p가 가리키는 곳(a)에 20을 넣어요
+printf("%d\n", a);   // 20  : a가 바뀌었어요!</pre>
+    <p>변수 앞의 <code class="i">*</code>는 "쪽지에 적힌 주소로 가라"는 뜻이에요. <code class="i">*p</code>는 곧 <code class="i">a</code>와 같아요.</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>&amp;와 *</h2>
+  <p>포인터는 이 두 기호만 구분하면 돼요.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>모양</th><th>뜻</th><th>예시</th><th>읽는 법</th></tr></thead>
+    <tbody>
+      <tr><td class="m">&amp;변수</td><td>주소 알아내기</td><td class="m">&amp;a</td><td>a의 주소</td></tr>
+      <tr><td class="m">int *p</td><td>포인터 만들기 (선언할 때)</td><td class="m">int *p;</td><td>int를 가리키는 쪽지 p</td></tr>
+      <tr><td class="m">*포인터</td><td>주소로 따라가기 (쓸 때)</td><td class="m">*p = 20;</td><td>p가 가리키는 곳</td></tr>
+      <tr><td class="m">포인터</td><td>쪽지에 적힌 주소 자체</td><td class="m">p</td><td>주소 1000</td></tr>
+    </tbody></table></div>
+  <p><b>&amp;와 *는 반대예요.</b> &amp;는 값에서 주소로, *는 주소에서 값으로 가요. 그래서 <code class="i">*&amp;a</code>는 다시 <code class="i">a</code>예요.</p>
+  <h3>알아 두기</h3>
+  <ul>
+    <li>포인터도 자료형을 맞춰요. int 주소는 <code class="i">int *</code>, float 주소는 <code class="i">float *</code>에 담아요.</li>
+    <li>아무 곳도 가리키지 않을 때는 <code class="i">NULL</code>을 넣어 둬요. <code class="i">int *p = NULL;</code></li>
+    <li>주소는 <code class="i">%p</code>로 출력해요.</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>쪽지 따라가기</h2>
+  <p>a는 1000번 사물함에 있다고 해 볼게요. p에 주소를 적고, 그 주소로 가서 값을 바꿔 봐요.</p>
+  <div id="tracer"></div>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>문제 풀기</h2>
+  <div class="q"><div class="q-head"><b>1번</b><span class="q-type">써 보기</span></div><p><code class="i">int b = 3;</code>이 있어요. b를 가리키는 포인터 <code class="i">q</code>를 만들어 보세요.</p>
+    <details><summary>정답 보기</summary><div class="ans"><pre class="code">int *q = &amp;b;</pre></div></details></div>
+  <div class="q"><div class="q-head"><b>2번</b><span class="q-type">결과 맞히기</span></div><pre class="code">int a = 5;
+int *p = &amp;a;
+*p = 7;
+printf("%d", a);</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>7</b>이에요. *p는 a 자체라서 a가 7로 바뀌어요.</p><div class="trap">많이 틀리는 답: 5 (p만 바뀐다고 생각해서)</div></div></details></div>
+  <div class="q"><div class="q-head"><b>3번</b><span class="q-type">결과 맞히기</span></div><pre class="code">int a = 1, b = 2;
+int *p = &amp;a;
+p = &amp;b;
+*p = 9;
+printf("%d %d", a, b);</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>1 9</b>예요. 쪽지를 b의 주소로 바꿔 적었으니 *p는 이제 b예요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>4번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">int a = 10;
+int *p = a;
+float *f = &amp;a;</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p>2번째 줄: 포인터에는 주소를 넣어야 해요. <code class="i">int *p = &amp;a;</code><br>3번째 줄: int의 주소를 float 포인터에 담았어요. 자료형이 달라요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div><p>함수 안에서 원본 변수의 값을 두 배로 바꾸는 함수 <code class="i">twice</code>를 포인터로 만들어 보세요.</p>
+    <details><summary>정답 보기</summary><div class="ans"><pre class="code">void twice(int *x) {
+    *x = *x * 2;     // 주소로 가서 원본을 바꿔요
+}
+
+int main(void) {
+    int a = 5;
+    twice(&amp;a);       // 값이 아니라 주소를 넘겨요
+    printf("%d\n", a);   // 10
+    return 0;
+}</pre><p>함수 시간에는 a가 안 바뀌었죠? 주소를 넘기면 바뀌어요. 이게 <b>Call by reference</b>예요.</p></div></details></div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>이럴 땐?</h2>
+  <div class="err"><div class="err-sym"><span class="s1">초기화하지 않은 포인터를 썼어요</span><span class="msg">warning C4700: 초기화되지 않은 'p' 지역 변수를 사용했습니다.  ·  액세스 위반</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>쪽지에 아무 주소도 안 적었는데 따라가려고 했어요. 엉뚱한 사물함을 열게 돼요.</span></div>
+      <div class="row"><b>어떻게?</b><span>만들 때 주소를 넣거나, 일단 <code class="i">NULL</code>을 넣고 쓰기 전에 확인해요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">실행하자마자 "액세스 위반"으로 멈춰요</span><span class="msg">예외 발생: 쓰기 액세스 위반입니다. p이(가) nullptr였습니다.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>NULL(아무 데도 아님)인 포인터를 따라가려고 했어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>쓰기 전에 확인해요. <code class="i">if (p != NULL) { *p = 20; }</code></span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">포인터 자료형이 안 맞는다고 나와요</span><span class="msg">.c: warning C4133: 'int *'과(와) 'float *' 사이의 형식이 호환되지 않습니다.  ·  .cpp: error C2440</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>int의 주소를 float 포인터에 담았어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>가리킬 변수의 자료형과 포인터 자료형을 맞춰요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">둘 다 포인터인 줄 알았는데 하나만 포인터예요</span><span class="msg">int* a, b;   // a만 포인터, b는 그냥 int</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>*는 바로 옆 이름에만 붙어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>각각 붙이거나 한 줄에 하나씩 만들어요. <code class="i">int *a, *b;</code></span></div></div></div>
+  <p class="note-small">에러 번호와 문구는 Visual Studio 기준이에요. 파일 종류(.c/.cpp)와 버전에 따라 조금 다를 수 있어요.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>다음에 배울 것</h2>
+  <div class="links">
+    <div class="lk"><span class="when">2개월차 1주차</span><span class="what">포인터 2</span><span class="why">배열 이름은 첫 칸의 주소, 포인터로 배열 돌기</span></div>
+    <div class="lk"><span class="when">2개월차 1주차</span><span class="what">Call by value / reference</span><span class="why">복사본을 넘기기 vs 주소를 넘기기</span></div>
+    <div class="lk"><span class="when">2개월차 1주차</span><span class="what">구조체</span><span class="why">구조체 포인터와 -&gt; 연산자</span></div>
+    <div class="lk"><span class="when">2개월차 2주차</span><span class="what">링크드 리스트</span><span class="why">포인터로 상자들을 줄줄이 연결하기</span></div>
+  </div>
+</section>
+<footer>C 기초 학습 자료 · 포인터 · 이전: 랜덤 · 다음: 구조체</footer>
+</div>
+<script>
+window.TRACE={code:[
+'int a = 10;',
+'int *p = &a;',
+'printf("%d\\n", *p);',
+'*p = 20;',
+'printf("%d\\n", a);'
+],steps:[
+{ln:0,mem:{a:{v:10,a:'주소 1000'}},note:'a를 만들었어요. 1000번 사물함에 10이 들어 있어요.'},
+{ln:1,mem:{p:{v:'→1000',a:'주소 2000'}},note:'&a는 a의 주소 1000이에요. 포인터 p(2000번 사물함)에 1000을 적었어요. p는 a를 가리켜요.'},
+{ln:2,out:'10\n',note:'*p: p에 적힌 1000번으로 가서 값을 꺼내요. 10이 나와요.'},
+{ln:3,mem:{a:{v:20,a:'주소 1000'}},note:'*p = 20: 1000번 사물함(a)에 20을 넣어요. p는 그대로, a가 바뀌어요!'},
+{ln:4,out:'20\n',note:'a를 출력하면 20이에요. a를 직접 건드리지 않고 포인터로 바꿨어요.'}
+]};
+</script>
+<script>
+(function(){
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  function hl(src){let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  window.hlC=hl;
+  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent)});
+  const T=window.TRACE, root=document.getElementById('tracer');
+  if(!T||!root) return;
+  root.className='tracer';
+  root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">화면에 나온 글자</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
+  const q=s=>root.querySelector(s);
+  q('.tr-code').innerHTML=T.code.map((l,i)=>'<div class="tr-line"><span class="ln">'+(i+1)+'</span><span>'+(hl(l)||' ')+'</span></div>').join('');
+  const lines=[...root.querySelectorAll('.tr-line')];
+  let step=0;
+  function stateAt(n){const mem={};let out='';for(let i=0;i<n;i++){const s=T.steps[i];if(s.mem)for(const k in s.mem){if(s.mem[k]===null)delete mem[k];else mem[k]=s.mem[k];}if(s.out)out+=s.out;}return{mem,out};}
+  function show(v){
+    if(Array.isArray(v))return '<div class="arr">'+v.map((x,i)=>'<div class="ac"><span class="cell">'+esc(x)+'</span><small>['+i+']</small></div>').join('')+'</div>';
+    if(v&&typeof v==='object'&&v.f)return '<div class="rec">'+Object.keys(v.f).map(k=>'<span>'+esc(k)+' : <b>'+esc(v.f[k])+'</b></span>').join('')+'</div>'+(v.a?'<small>'+esc(v.a)+'</small>':'');
+    if(v&&typeof v==='object')return '<span class="cell">'+esc(v.v)+'</span><small>'+esc(v.a)+'</small>';
+    return '<span class="cell">'+esc(v)+'</span>';
+  }
+  function render(){
+    const cur=stateAt(step),prev=stateAt(Math.max(0,step-1));
+    lines.forEach((el,i)=>el.classList.toggle('on',step>0&&T.steps[step-1].ln===i));
+    const keys=Object.keys(cur.mem);
+    q('.tr-mem').innerHTML=keys.length?keys.map(k=>'<div class="named'+(step>0&&JSON.stringify(cur.mem[k])!==JSON.stringify(prev.mem[k])?' changed':'')+'"><span class="nametag">'+esc(k)+'</span>'+show(cur.mem[k])+'</div>').join(''):'<span class="empty">아직 만든 변수가 없어요</span>';
+    q('.tr-out').textContent=cur.out;
+    q('.tr-note').textContent=step===0?'"다음 줄 실행"을 눌러 시작해요.':T.steps[step-1].note;
+    q('.pos').textContent=step+' / '+T.steps.length;
+    q('[data-a=prev]').disabled=q('[data-a=reset]').disabled=step===0;
+    q('[data-a=next]').disabled=step===T.steps.length;
+  }
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='next'&&step<T.steps.length)step++;else if(a==='prev'&&step>0)step--;else if(a==='reset')step=0;else return;render();});
+  render();
+})();
+</script>
+
+</body>
+</html>

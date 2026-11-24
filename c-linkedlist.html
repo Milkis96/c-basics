@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>C 기초 · 링크드 리스트</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: C 기초 학습 자료 공통 틀. 한 칼럼, 강의 8단계 섹션, 이름표 상자 그림 */
+:root{--bg:#f3f6fa;--surface:#ffffff;--fg:#1d2533;--muted:#5c6779;--line:#dde3ec;--accent:#2d63a6;--accent-soft:#e3edf9;--tag:#f5c64a;--tag-fg:#3a2c00;--tag-soft:#fdf4d9;--code-bg:#1d2430;--code-fg:#e3e8ef;--code-dim:#8793a3;--code-kw:#8cc2f0;--code-num:#f2b77a;--code-str:#9fd6a8;--ok:#1d7357;--ok-soft:#e1f3ea;--bad:#b23b3b;--bad-soft:#fae5e5;--font-head:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;--font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.75}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:14px;margin-bottom:24px}
+.crumb{font-size:13px;color:var(--muted);font-weight:600}
+h1{margin:0;font-family:var(--font-head);font-weight:400;font-size:clamp(34px,7vw,50px);line-height:1.2;text-wrap:balance}
+h1 .sub{display:block;font-size:.5em;color:var(--accent)}
+.lead{margin:0;color:var(--muted);max-width:60ch;font-size:17.5px}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;margin:6px 0 30px}
+.hero .eq{font-family:var(--font-head);font-size:22px;color:var(--muted)}
+.chip{font-family:var(--font-mono);font-size:26px;font-weight:700;padding:8px 18px;border-radius:14px;background:var(--accent-soft);color:var(--accent)}
+.chip.y{background:var(--tag);color:var(--tag-fg)}
+.named{display:grid;justify-items:center;gap:6px}
+.nametag{font-family:var(--font-head);font-size:19px;background:var(--tag);color:var(--tag-fg);padding:2px 16px;border-radius:8px;transform:rotate(-3deg)}
+.cell{font-family:var(--font-mono);font-size:24px;font-weight:700;min-width:80px;text-align:center;padding:10px 14px;border:3px solid var(--accent);border-radius:14px;background:var(--surface)}
+.named small{font-size:12.5px;color:var(--muted);font-family:var(--font-mono)}
+nav.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 40px}
+nav.steps a{font-size:14.5px;text-decoration:none;color:var(--fg);padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.steps a b{color:var(--accent);margin-right:5px}
+nav.steps a:hover,nav.steps a:focus-visible{border-color:var(--accent);outline:none}
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:400;font-size:28px;margin:0 0 16px;text-wrap:balance}
+h2 .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:20px;flex-shrink:0}
+h3{font-family:var(--font-head);font-weight:400;font-size:21px;margin:26px 0 10px}
+p{margin:0 0 14px;max-width:64ch}
+.key{background:var(--tag-soft);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-size:20px;font-weight:700;line-height:1.5}
+.key small{display:block;font-weight:400;font-size:15.5px;color:var(--muted);margin-top:6px}
+code.i{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px}
+.story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.story>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.story .who{font-weight:700;margin-bottom:4px}.story .bad{color:var(--bad)}.story .good{color:var(--ok)}
+.story .res{font-size:15px;color:var(--muted);margin-top:4px}
+@media (max-width:600px){.story{grid-template-columns:1fr}}
+pre.code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;line-height:1.7;padding:16px 18px;border-radius:12px;overflow-x:auto;margin:0 0 16px}
+.c{color:var(--code-dim)}.k{color:var(--code-kw)}.nm{color:var(--code-num)}.s{color:var(--code-str)}
+.parts{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:4px 0 18px}
+.part{display:grid;justify-items:center;gap:6px}
+.part code{font-family:var(--font-mono);font-size:22px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:2px solid var(--line)}
+.part span{font-size:13.5px;color:var(--muted);font-weight:600}
+.part.p-a code{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.part.p-b code{background:var(--tag);border-color:var(--tag);color:var(--tag-fg)}
+.part.p-c code{color:var(--code-num);border-color:var(--code-num)}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+.way.main{border:2px solid var(--accent)}
+.way-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.way-head h3{margin:0}
+.badge{font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent);color:var(--surface)}
+.way pre.code,.way p,.way .tablewrap{margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.card .t{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--accent)}
+.card .w{font-weight:700}.card .e{font-size:15px;color:var(--muted)}
+.card pre{margin:4px 0 0;font-family:var(--font-mono);font-size:14px;background:var(--bg);padding:7px 11px;border-radius:8px;overflow-x:auto}
+.tablewrap{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--bg)}
+td.m{font-family:var(--font-mono)}
+.secret{background:var(--surface);border:2px dashed var(--tag);border-radius:16px;padding:16px 20px;margin:0 0 14px}
+.secret h3{margin:0 0 8px}.secret pre.code{margin:8px 0}
+.tracer{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.tr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:620px){.tr-body{grid-template-columns:1fr}}
+.tr-code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:14.5px;padding:14px 0;overflow-x:auto;min-width:0}
+.tr-line{padding:3px 16px;white-space:pre;display:flex;gap:12px;border-left:4px solid transparent}
+.tr-line .ln{color:var(--code-dim);width:1.4em;text-align:right;flex-shrink:0}
+.tr-line.on{background:rgba(140,194,240,.18);border-left-color:var(--tag)}
+.tr-state{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
+.lbl{font-size:13px;color:var(--muted);font-weight:700}
+.tr-mem{display:flex;gap:16px;flex-wrap:wrap;min-height:100px;align-items:flex-end}
+.tr-mem .cell{font-size:20px;min-width:64px}
+.tr-mem .named.changed>.cell,.tr-mem .named.changed .rec,.tr-mem .named.changed .arr{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+.arr{display:flex;gap:4px;flex-wrap:wrap}.arr .ac{display:grid;justify-items:center;gap:2px}
+.arr .cell{min-width:48px;font-size:18px;padding:8px}
+.arr small{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.rec{border:3px solid var(--accent);border-radius:14px;background:var(--surface);padding:8px 14px;font-family:var(--font-mono);font-size:15px;display:grid;gap:2px}
+.empty{color:var(--muted);font-size:15px}
+.tr-out{font-family:var(--font-mono);font-size:15px;background:var(--bg);border-radius:10px;padding:8px 12px;min-height:64px;white-space:pre-wrap}
+.tr-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px;min-height:50px}
+.tr-ctrl{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.tr-ctrl .pos{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+button{font-family:var(--font-body);font-size:15px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:14px;margin-bottom:16px}
+.lab-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lab label{font-weight:700;font-size:14.5px;min-width:7em}
+.lab input[type=range]{accent-color:var(--accent);flex:1;min-width:140px}
+.lab .val{font-family:var(--font-mono);font-weight:700;font-size:18px;min-width:2em}
+.lab pre.code{margin:0}
+.screen{font-family:var(--font-mono);font-size:17px;background:var(--bg);border-radius:10px;padding:8px 12px}
+.lab-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px}
+.q-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.q-head b{font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--accent)}
+.q-type{font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.q-type.hard{background:var(--tag-soft);color:var(--tag-fg)}
+.q p{margin-bottom:10px}.q ul{margin:0 0 10px;padding-left:22px}
+details{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details .ans{padding-top:8px}details .ans p{margin-bottom:6px}
+.trap{font-size:14.5px;background:var(--tag-soft);border-radius:10px;padding:8px 14px;margin-top:6px}
+.err{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.err-sym{padding:14px 20px;background:var(--bad-soft);display:grid;gap:4px}
+.err-sym .s1{font-weight:700;color:var(--bad);font-size:17.5px}
+.err-sym .msg{font-family:var(--font-mono);font-size:13px;color:var(--fg);opacity:.85;word-break:break-all}
+.err-body{padding:14px 20px;display:grid;gap:8px}
+.err-body .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.err-body .row b{color:var(--muted);font-size:14.5px;padding-top:2px}
+.err-body .row>span{min-width:0}
+.err-body pre.code{margin:6px 0 0;font-size:14px;padding:10px 14px}
+@media (max-width:480px){.err-body .row{grid-template-columns:1fr;gap:0}}
+.note-small{font-size:14px;color:var(--muted)}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px}
+.lk .when{font-size:13px;color:var(--accent);font-weight:700}
+.lk .what{font-family:var(--font-head);font-size:19px}
+.lk .why{font-size:14.5px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;min-height:96px}
+.chain .head{display:grid;justify-items:center;gap:4px}
+.chain .head .note{font-family:var(--font-mono);font-size:14px;background:var(--tag-soft);border:2px dashed var(--tag);border-radius:8px;padding:4px 8px}
+.chain .head b{font-size:13px;color:var(--muted)}
+.node{display:grid;grid-template-columns:auto auto;border:2px solid var(--accent);border-radius:10px;overflow:hidden;background:var(--surface);position:relative}
+.node span{font-family:var(--font-mono);font-weight:700;padding:8px 10px;text-align:center}
+.node .d{font-size:20px;border-right:2px dashed var(--line)}
+.node .nx{font-size:13px;color:var(--muted);align-self:center}
+.node small{position:absolute;top:-20px;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:11.5px;color:var(--muted);padding:0}
+.node.new{animation:pop .5s}
+.chain .link{font-family:var(--font-head);font-size:22px;color:var(--accent)}
+.chain .null{font-family:var(--font-mono);font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:10px;padding:6px 10px}
+.chain-wrap{padding-top:20px}
+.lab ol{margin:0;padding-left:22px}
+.lab ol li{margin:2px 0}
+.lab ol li.on{font-weight:700;color:var(--accent)}
+.mission .q-head b{font-size:17px}
+.goal{margin:6px 0 10px;font-size:16px}
+.check{border:2px dashed var(--accent);border-radius:12px;padding:12px 16px;margin-top:12px;background:var(--accent-soft)}
+.check h4{margin:0 0 6px;font-size:15px;color:var(--accent)}
+.check ul{margin:0;padding-left:20px}
+.check .ask{margin-top:8px;font-size:15px}
+.nocode{font-size:15px;background:var(--tag-soft);border-radius:12px;padding:12px 16px;margin:0 0 16px}
+details.hint summary{color:var(--accent)}
+.sign td:last-child{min-width:7em}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="crumb">2개월차 · 2주차 · 실습</div>
+  <h1>링크드 리스트<span class="sub">다음 상자의 주소를 들고 있는 상자들의 줄</span></h1>
+  <p class="lead">배열은 칸들이 딱 붙어 있는 기차예요. 링크드 리스트는 상자들이 메모리 여기저기 흩어져 있고, 각 상자가 <b>"다음 상자는 몇 번지"</b> 쪽지를 들고 있어요. 쪽지를 따라가면 줄을 끝까지 방문할 수 있어요.</p>
+  <p class="nocode">이 페이지는 <b>미션형 실습</b>이에요. 정답 코드는 없어요. 미션을 하나 끝낼 때마다 <b>강사에게 검사</b>를 받고 다음 미션으로 넘어가요. 막히면 힌트를 하나씩 펼쳐 보세요.</p>
+</header>
+
+<div class="hero" aria-label="head가 3000번 노드를 가리키고, 10, 20, 30 노드가 차례로 연결되고 마지막은 NULL">
+  <div class="chain chain-wrap">
+    <div class="head"><b>head</b><span class="note">→3000</span></div><span class="link">→</span>
+    <div class="node"><small>3000</small><span class="d">10</span><span class="nx">→7200</span></div><span class="link">→</span>
+    <div class="node"><small>7200</small><span class="d">20</span><span class="nx">→5100</span></div><span class="link">→</span>
+    <div class="node"><small>5100</small><span class="d">30</span><span class="nx">NULL</span></div>
+  </div>
+</div>
+
+<nav class="steps" aria-label="학습 단계">
+  <a href="#s1"><b>1</b>링크드 리스트란?</a><a href="#s2"><b>2</b>왜 필요해?</a><a href="#s3"><b>3</b>새 문법</a><a href="#s4"><b>4</b>검사 방법</a><a href="#s5"><b>5</b>눈으로 보기</a><a href="#s6"><b>6</b>미션</a><a href="#s7"><b>7</b>이럴 땐?</a><a href="#s8"><b>8</b>다음에 배울 것</a>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>링크드 리스트란?</h2>
+  <div class="key">값과 "다음 상자의 주소"를 함께 담은 상자(노드)를 줄줄이 연결한 것이에요.<small>link = 연결, list = 목록. 연결된 목록.</small></div>
+  <ul>
+    <li><b>노드(node)</b>: 상자 하나. 값(data)과 다음 노드의 주소(next)가 들어 있어요.</li>
+    <li><b>head</b>: 첫 번째 노드의 주소를 적은 쪽지. 이걸 잃어버리면 줄 전체를 잃어버려요.</li>
+    <li><b>NULL</b>: 마지막 노드의 next. "뒤에 아무도 없음" 표시예요.</li>
+  </ul>
+  <p>지금까지 배운 <b>구조체 + 포인터 + 함수 + Call by reference</b>를 모두 쓰는 종합 실습이에요. 막히면 그 주제 페이지로 돌아가서 다시 보고 오세요.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>왜 필요해?</h2>
+  <div class="story">
+    <div><div class="who bad">배열이 불편할 때</div><p>칸 수를 처음에 정해야 해요. 중간에 하나 끼우려면 뒤의 값을 전부 한 칸씩 밀어야 해요.</p></div>
+    <div><div class="who good">링크드 리스트는</div><p>필요할 때마다 상자를 하나씩 만들어요. 끼울 때는 쪽지 몇 장만 고쳐 쓰면 돼요.</p></div>
+  </div>
+  <div class="cards">
+    <div class="card"><span class="w">게임에서</span><span class="e">화면에 생겼다 사라지는 총알, 적, 아이템 목록처럼 개수가 계속 바뀌는 것.</span></div>
+    <div class="card"><span class="w">대신 느린 점</span><span class="e">arr[50]처럼 바로 갈 수 없어요. head부터 쪽지를 50번 따라가야 해요.</span></div>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>새 문법</h2>
+  <p>미션에 필요한 새 도구는 세 가지예요. 예시는 일부러 링크드 리스트가 아닌 걸로 보여 줄게요.</p>
+  <div class="way">
+    <div class="way-head"><span class="badge">빌리기</span><h3>malloc: 메모리를 필요할 때 빌리기</h3></div>
+<pre class="code">#include &lt;stdlib.h&gt;      // malloc, free
+
+int *p = (int *)malloc(sizeof(int));   // int 하나 크기만큼 빌리고 주소를 받아요
+if (p == NULL) return 1;               // 못 빌렸으면 멈추기
+*p = 42;</pre>
+    <ul>
+      <li>보통 변수는 함수가 끝나면 사라지지만, malloc으로 빌린 메모리는 <b>free 할 때까지</b> 남아 있어요.</li>
+      <li>앞의 <code class="i">(int *)</code>는 .cpp 파일에서 필요해요. 붙여 두면 .c, .cpp 둘 다 돼요.</li>
+    </ul>
+  </div>
+  <div class="way">
+    <div class="way-head"><span class="badge">돌려주기</span><h3>free: 다 쓴 메모리 반납</h3></div>
+<pre class="code">free(p);       // 빌린 곳 반납
+p = NULL;      // 반납한 주소를 다시 쓰지 않게 지워 두기</pre>
+    <p>반납하지 않으면 <b>메모리 누수</b>, 반납한 뒤에 또 쓰면 프로그램이 멈추거나 이상한 값이 나와요.</p>
+  </div>
+  <div class="way main">
+    <div class="way-head"><span class="badge">화살표</span><h3>-&gt; : 포인터로 구조체 칸 쓰기</h3></div>
+<pre class="code">typedef struct { int hp; int atk; } Monster;
+
+Monster *m = (Monster *)malloc(sizeof(Monster));
+m-&gt;hp = 100;     // (*m).hp = 100; 과 같아요
+m-&gt;atk = 7;
+free(m);</pre>
+  </div>
+  <div class="secret">
+    <h3>자기와 같은 구조체를 가리키는 칸</h3>
+    <p>노드는 "다음 노드의 주소"를 가져야 해요. 그래서 구조체 안에 <b>자기 자신과 같은 구조체를 가리키는 포인터</b>가 들어가요. 이때 typedef 이름은 아직 완성되지 않아서, 구조체 안에서는 <code class="i">struct 이름</code>으로 불러야 해요. 미션 1에서 직접 만들어 보세요.</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>검사 방법</h2>
+  <ol>
+    <li>미션을 순서대로 해요. 앞 미션이 다음 미션의 재료예요.</li>
+    <li>각 미션의 <b>확인용 main</b>을 붙여서 실행하고, <b>기대 출력</b>과 똑같이 나오는지 먼저 스스로 확인해요.</li>
+    <li>똑같이 나오면 손을 들고 강사에게 <b>검사</b>를 받아요. 강사는 실행 결과와 함께 <b>검사 질문</b>을 해요. 코드를 말로 설명할 수 있어야 통과예요.</li>
+    <li>통과하면 아래 표에 확인을 받고 다음 미션으로 가요.</li>
+  </ol>
+  <div class="tablewrap sign"><table>
+    <thead><tr><th>미션</th><th>만들 것</th><th>강사 확인</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>노드 구조체</td><td></td></tr>
+      <tr><td>2</td><td>노드 2개 손으로 연결하기</td><td></td></tr>
+      <tr><td>3</td><td>printList</td><td></td></tr>
+      <tr><td>4</td><td>pushFront</td><td></td></tr>
+      <tr><td>5</td><td>popFront + 전부 free</td><td></td></tr>
+      <tr><td>6 (도전)</td><td>count, pushBack</td><td></td></tr>
+    </tbody></table></div>
+  <p class="note-small">힌트를 펼쳐 봤다고 감점되지 않아요. 대신 검사 때 "왜 그렇게 했는지"를 설명할 수 있어야 해요.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>눈으로 보기</h2>
+  <p>코드를 쓰기 전에 버튼으로 노드를 붙이고 떼어 보세요. 아래에 <b>쪽지를 어떤 순서로 고쳐 쓰는지</b> 말로 나와요. 이 순서를 코드로 옮기는 게 미션이에요.</p>
+  <div class="lab">
+    <div class="lab-row"><button type="button" id="l-front" class="primary">맨 앞에 추가</button><button type="button" id="l-back">맨 뒤에 추가</button><button type="button" id="l-pop">맨 앞 삭제</button><button type="button" id="l-clr">전부 반납</button></div>
+    <div class="chain chain-wrap" id="l-chain" aria-live="polite"></div>
+    <ol id="l-steps"></ol>
+    <div class="lab-note" id="l-note"></div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>미션</h2>
+
+  <div class="q mission"><div class="q-head"><b>미션 1</b><span class="q-type">노드 구조체</span></div>
+    <p class="goal">int 값 하나와 다음 노드의 주소를 담는 구조체 <code class="i">Node</code>를 만드세요. <code class="i">Node</code>라는 이름으로 쓸 수 있게 typedef도 해 주세요.</p>
+    <p><b>확인용 main</b></p>
+<pre class="code">int main(void) {
+    Node a;
+    a.data = 10;
+    a.next = NULL;
+    printf("%d %d\n", a.data, a.next == NULL);
+    return 0;
+}</pre>
+    <p><b>기대 출력</b>: <code class="i">10 1</code></p>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>칸은 두 개예요. 이름은 확인용 main을 보면 알 수 있어요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>next 칸의 자료형은 "노드를 가리키는 포인터"예요. 구조체 안에서는 아직 typedef 이름 <code class="i">Node</code>를 쓸 수 없어서 <code class="i">struct 태그이름 *</code>으로 써야 해요. 그러려면 <code class="i">typedef struct 태그이름 { ... } Node;</code>처럼 태그 이름을 붙여야 해요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>확인용 main이 그대로 컴파일되고 <code class="i">10 1</code>이 나온다</li></ul>
+      <div class="ask"><b>검사 질문</b>: next의 자료형이 왜 <code class="i">int *</code>가 아닌가요?</div></div>
+  </div>
+
+  <div class="q mission"><div class="q-head"><b>미션 2</b><span class="q-type">손으로 연결하기</span></div>
+    <p class="goal">함수 없이 main 안에서 malloc으로 노드 2개(10, 20)를 만들고, <b>head → 10 → 20 → NULL</b>이 되게 연결하세요. 그다음 head만 써서 두 값을 출력하고, 두 노드를 free 하세요.</p>
+    <p><b>규칙</b>: 출력할 때는 <code class="i">head</code>에서 출발해야 해요. 노드를 만들 때 쓴 변수 이름으로 바로 출력하면 안 돼요.</p>
+    <p><b>기대 출력</b>: <code class="i">10 20</code></p>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>노드 하나를 만드는 순서: malloc → data 넣기 → next에 NULL 넣기. 두 번 반복해요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>연결은 쪽지 두 장이에요. 첫 노드의 next에 두 번째 노드의 주소, head에 첫 노드의 주소.</p></div></details>
+    <details class="hint"><summary>힌트 3</summary><div class="ans"><p>두 번째 값은 head에서 화살표를 <b>두 번</b> 따라가면 나와요. <code class="i">head-&gt;???-&gt;???</code></p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li><code class="i">10 20</code>이 출력된다</li><li>출력이 head에서 출발한다</li><li>free가 2번 있다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 디버거로 두 노드의 주소를 보여 주세요. 두 주소는 붙어 있나요? 배열과 무엇이 다른가요?</div></div>
+  </div>
+
+  <div class="q mission"><div class="q-head"><b>미션 3</b><span class="q-type">printList</span></div>
+    <p class="goal">head를 받아서 리스트 전체를 <code class="i">10 -&gt; 20 -&gt; NULL</code> 모양으로 출력하는 함수 <code class="i">void printList(Node *head)</code>를 만드세요. 노드가 몇 개든, 0개여도 동작해야 해요.</p>
+    <p><b>확인용 main</b> (미션 2의 연결 코드 뒤에 붙이기)</p>
+<pre class="code">printList(head);    // 10 -&gt; 20 -&gt; NULL
+printList(NULL);    // NULL</pre>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>"쪽지를 따라 한 칸 이동"을 NULL을 만날 때까지 반복해요. 반복 횟수를 모르니 for보다 while이 편해요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>지금 보고 있는 노드를 담는 포인터를 하나 만들어요(예: cur). 출력하고 → cur를 다음 노드로 바꾸고 → 반복.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>두 줄 모두 기대 출력과 같다</li><li>노드를 3개로 늘려도 코드를 안 고치고 동작한다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 함수 안에서 head를 직접 옮겨도 main의 head는 안전한가요? 왜 그런가요? (Call by value)</div></div>
+  </div>
+
+  <div class="q mission"><div class="q-head"><b>미션 4</b><span class="q-type">pushFront</span></div>
+    <p class="goal">맨 앞에 새 노드를 추가하는 함수를 만드세요. 이번부터는 malloc을 main이 아니라 함수 안에서 해요.</p>
+<pre class="code">void pushFront(Node **head, int value);   // 이 모양 그대로</pre>
+    <p><b>확인용 main</b></p>
+<pre class="code">int main(void) {
+    Node *head = NULL;
+    pushFront(&amp;head, 1);
+    pushFront(&amp;head, 2);
+    pushFront(&amp;head, 3);
+    printList(head);
+    return 0;
+}</pre>
+    <p><b>기대 출력</b>: <code class="i">3 -&gt; 2 -&gt; 1 -&gt; NULL</code></p>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>5번 "눈으로 보기"에서 맨 앞에 추가를 눌러 보세요. 쪽지를 고치는 순서가 나와요. 그 순서를 지키지 않으면 원래 줄을 잃어버려요.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>함수가 바꿔야 하는 것은 main의 <b>head 변수</b>예요. head는 포인터니까, 그 포인터의 주소를 받아야 해요. 그래서 별이 두 개예요. 함수 안에서 <code class="i">*head</code>는 main의 head 그 자체예요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>기대 출력과 같다</li><li>빈 리스트(head가 NULL)에서 첫 추가가 된다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 매개변수를 <code class="i">Node *head</code>(별 하나)로 하면 어떻게 되나요? 쪽지 고치는 두 줄의 순서를 바꾸면 어떻게 되나요?</div></div>
+  </div>
+
+  <div class="q mission"><div class="q-head"><b>미션 5</b><span class="q-type">popFront + 전부 반납</span></div>
+    <p class="goal">맨 앞 노드를 빼고 free 하는 <code class="i">void popFront(Node **head)</code>를 만드세요. 리스트가 비어 있으면 아무것도 하지 않아야 해요. 그리고 main 끝에서 popFront를 반복해 모든 노드를 반납하세요.</p>
+    <p><b>확인용 main</b> (미션 4의 main에 이어서)</p>
+<pre class="code">popFront(&amp;head);
+printList(head);     // 2 -&gt; 1 -&gt; NULL
+// 여기에 "전부 반납" 반복문
+printList(head);     // NULL
+popFront(&amp;head);     // 빈 리스트: 아무 일도 없어야 해요</pre>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>free 한 노드는 다시 열어 볼 수 없어요. 그런데 head를 옮기려면 그 노드의 next가 필요해요. 그러면 무엇을 먼저 해야 할까요?</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>지울 노드의 주소를 다른 포인터에 잠깐 맡겨 두고 → head를 옮기고 → 맡겨 둔 걸 free.</p></div></details>
+    <details class="hint"><summary>힌트 3</summary><div class="ans"><p>전부 반납: "head가 NULL이 아닌 동안 popFront"를 반복해요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>세 줄의 기대 출력이 맞고, 마지막 popFront에서 멈추지 않는다</li><li>malloc 수와 free 수가 같다</li></ul>
+      <div class="ask"><b>검사 질문</b>: free를 head 옮기기보다 먼저 하면 무슨 일이 생기나요? 디버거로 보여 줄 수 있나요?</div></div>
+  </div>
+
+  <div class="q mission"><div class="q-head"><b>미션 6</b><span class="q-type hard">도전</span></div>
+    <p class="goal">두 함수를 더 만드세요.</p>
+<pre class="code">int count(Node *head);                    // 노드 개수
+void pushBack(Node **head, int value);    // 맨 뒤에 추가</pre>
+    <p><b>확인용 main</b></p>
+<pre class="code">Node *head = NULL;
+pushBack(&amp;head, 1);
+pushBack(&amp;head, 2);
+pushFront(&amp;head, 0);
+printList(head);              // 0 -&gt; 1 -&gt; 2 -&gt; NULL
+printf("%d\n", count(head));  // 3</pre>
+    <details class="hint"><summary>힌트 1</summary><div class="ans"><p>count는 printList와 거의 같아요. 출력 대신 숫자를 셉니다.</p></div></details>
+    <details class="hint"><summary>힌트 2</summary><div class="ans"><p>pushBack은 "마지막 노드"를 찾아야 해요. 마지막 노드는 next가 NULL인 노드예요. 그리고 리스트가 비어 있을 때는 마지막 노드가 없으니 따로 처리해야 해요.</p></div></details>
+    <div class="check"><h4>검사 받기</h4><ul><li>기대 출력과 같다</li><li>빈 리스트에서 pushBack이 된다</li></ul>
+      <div class="ask"><b>검사 질문</b>: 노드가 1000개일 때 pushFront와 pushBack 중 무엇이 더 느린가요? 왜 그런가요?</div></div>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>이럴 땐?</h2>
+  <div class="err"><div class="err-sym"><span class="s1">구조체 안의 next 줄에서 에러가 나요</span><span class="msg">error C2061: 구문 오류: 식별자 'Node'  ·  또는 C2143</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>typedef 이름 <code class="i">Node</code>는 구조체 정의가 끝나야 생겨요. 구조체 안에서는 아직 모르는 이름이에요.</span></div>
+      <div class="row"><b>어떻게?</b><span>3번 "새 문법"의 마지막 상자와 미션 1의 힌트 2를 다시 보세요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">malloc 줄에서 변환할 수 없다고 나와요</span><span class="msg">error C2440: '초기화 중': 'void *'에서 'Node *'(으)로 변환할 수 없습니다.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>파일이 .cpp라서 C++ 규칙을 따라요.</span></div>
+      <div class="row"><b>어떻게?</b><span>malloc 앞에 <code class="i">(Node *)</code>를 붙여요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">malloc 아래에 초록 물결 경고가 생겨요</span><span class="msg">C6011: NULL 포인터 'n'을(를) 역참조하고 있습니다.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>malloc은 실패하면 NULL을 돌려줘요. 확인 없이 쓰면 위험하다는 경고예요.</span></div>
+      <div class="row"><b>어떻게?</b><span>쓰기 전에 NULL인지 확인하는 if를 넣어요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">printList가 끝나지 않거나 실행 중 멈춰요</span><span class="msg">예외 발생: 읽기 액세스 위반입니다. cur이(가) 0xCDCDCDCD였습니다.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>어떤 노드의 next에 NULL을 안 넣었어요. Debug 모드에서 malloc한 빈 칸은 0xCD로 채워져 있어서, 그 주소로 가려다 멈춰요.</span></div>
+      <div class="row"><b>어떻게?</b><span>노드를 만들자마자 next를 정해 주고 있는지 확인해요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">같은 값이 끝없이 출력돼요</span><span class="msg">3 -&gt; 3 -&gt; 3 -&gt; 3 -&gt; ...</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>노드의 next가 자기 자신을 가리켜요. pushFront에서 쪽지 고치는 순서가 바뀌었을 때 생겨요.</span></div>
+      <div class="row"><b>어떻게?</b><span>5번 "눈으로 보기"의 순서와 내 코드의 순서를 한 줄씩 비교해요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">함수 안에서 추가했는데 main의 리스트는 비어 있어요</span><span class="msg">printList(head) → NULL</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>head를 값으로 넘겨서 함수 안의 복사본만 바뀌었어요. Call by value 페이지의 swap과 같은 문제예요.</span></div>
+      <div class="row"><b>어떻게?</b><span>매개변수가 미션의 모양(<code class="i">Node **head</code>)과 같은지, 부를 때 &amp;를 붙였는지 확인해요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">지운 뒤에 이상한 큰 음수가 나오거나 멈춰요</span><span class="msg">-572662307  (0xDDDDDDDD)</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>free 한 노드를 다시 읽었어요. Debug 모드에서 free된 칸은 0xDD로 채워져요.</span></div>
+      <div class="row"><b>어떻게?</b><span>미션 5의 힌트 1을 보세요. free는 항상 그 노드를 다 쓴 다음에.</span></div></div></div>
+  <p class="note-small">에러 번호와 문구는 Visual Studio 기준이에요. 파일 종류(.c/.cpp)와 버전에 따라 조금 다를 수 있어요.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>다음에 배울 것</h2>
+  <div class="links">
+    <div class="lk"><span class="when">2개월차 3주차</span><span class="what">전체 복습</span><span class="why">C 전체를 다시 묶어 보기</span></div>
+    <div class="lk"><span class="when">3개월차</span><span class="what">C# · 유니티</span><span class="why">C#의 List&lt;T&gt;는 이런 자료구조를 대신 만들어 줘요. free 대신 가비지 컬렉터가 정리해요</span></div>
+    <div class="lk"><span class="when">5개월차 이후</span><span class="what">슈팅 게임</span><span class="why">생겼다 사라지는 총알·적 목록 관리</span></div>
+  </div>
+</section>
+<footer>C 기초 학습 자료 · 링크드 리스트 · 이전: 구조체 · 다음: 전체 복습</footer>
+</div>
+<script>
+window.addEventListener('DOMContentLoaded',function(){
+  const $=id=>document.getElementById(id);
+  let list=[], used=new Set(), lastNew=-1, val=10;
+  function addr(){let a;do{a=(1000+Math.floor(Math.random()*90)*100);}while(used.has(a));used.add(a);return a;}
+  function draw(steps,msg){
+    let h='<div class="head"><b>head</b><span class="note">'+(list.length?'→'+list[0].a:'NULL')+'</span></div>';
+    list.forEach((n,i)=>{h+='<span class="link">→</span><div class="node'+(n.a===lastNew?' new':'')+'"><small>'+n.a+'</small><span class="d">'+n.d+'</span><span class="nx">'+(i+1<list.length?'→'+list[i+1].a:'NULL')+'</span></div>';});
+    if(!list.length)h+='<span class="link">→</span><span class="null">NULL</span>';
+    $('l-chain').innerHTML=h;
+    $('l-steps').innerHTML=steps.map(s=>'<li>'+s+'</li>').join('');
+    $('l-note').textContent=msg;
+  }
+  $('l-front').onclick=()=>{const a=addr(),d=val;val+=10;const old=list.length?list[0].a+'번':'NULL';list.unshift({a,d});lastNew=a;
+    draw(['새 상자를 빌려요 ('+a+'번).','새 상자에 값 '+d+'을 넣어요.','새 상자의 next 쪽지에 <b>지금 head에 적힌 주소</b>('+old+')를 옮겨 적어요.','그다음에 head 쪽지를 새 상자 주소('+a+'번)로 고쳐 적어요.'],
+      '3번과 4번의 순서를 바꾸면 어떻게 될지 생각해 보세요. 미션 4의 검사 질문이에요.');};
+  $('l-back').onclick=()=>{const a=addr(),d=val;val+=10;lastNew=a;
+    if(!list.length){list.push({a,d});draw(['새 상자를 빌려요 ('+a+'번).','값 '+d+'을 넣고, next에는 NULL을 적어요.','줄이 비어 있었으니 head를 새 상자로 고쳐 적어요.'],'빈 줄은 따로 처리해야 해요. 마지막 상자가 없으니까요.');return;}
+    const last=list[list.length-1];list.push({a,d});
+    draw(['새 상자를 빌려요 ('+a+'번). 값 '+d+'을 넣고 next에는 NULL.','head에서 출발해 next가 NULL인 상자를 찾을 때까지 쪽지를 따라가요. (지금은 '+(list.length-2)+'번 이동)','찾은 마지막 상자('+last.a+'번)의 next를 새 상자 주소로 고쳐 적어요.'],
+      '상자가 많을수록 2번 단계가 길어져요. 미션 6의 검사 질문과 연결돼요.');};
+  $('l-pop').onclick=()=>{if(!list.length){draw(['줄이 비어 있는지 먼저 확인해요. 비어 있으면 아무것도 안 해요.'],'이 확인이 없으면 NULL을 따라가다 멈춰요.');return;}
+    const del=list.shift();used.delete(del.a);lastNew=-1;
+    draw(['지울 상자('+del.a+'번)의 주소를 다른 쪽지에 잠깐 맡겨요.','head를 지울 상자의 next('+(list.length?list[0].a+'번':'NULL')+')로 고쳐 적어요.','맡겨 둔 주소의 상자를 반납(free)해요.'],
+      '반납을 1번보다 먼저 하면 next를 읽을 수 없어요. 미션 5의 검사 질문이에요.');};
+  $('l-clr').onclick=()=>{const n=list.length;list=[];used.clear();lastNew=-1;
+    draw(['head가 NULL이 될 때까지 "맨 앞 삭제"를 반복해요.'],n?'상자 '+n+'개를 모두 반납했어요. 프로그램이 끝나기 전에 꼭 해요.':'이미 비어 있어요.');};
+  draw(['"맨 앞에 추가"를 눌러 첫 상자를 만들어 보세요.'],'버튼을 누르면 쪽지를 고쳐 쓰는 순서가 여기 나와요.');
+});
+</script>
+<script>
+(function(){
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  function hl(src){let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  window.hlC=hl;
+  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent)});
+  const T=window.TRACE, root=document.getElementById('tracer');
+  if(!T||!root) return;
+  root.className='tracer';
+  root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">화면에 나온 글자</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
+  const q=s=>root.querySelector(s);
+  q('.tr-code').innerHTML=T.code.map((l,i)=>'<div class="tr-line"><span class="ln">'+(i+1)+'</span><span>'+(hl(l)||' ')+'</span></div>').join('');
+  const lines=[...root.querySelectorAll('.tr-line')];
+  let step=0;
+  function stateAt(n){const mem={};let out='';for(let i=0;i<n;i++){const s=T.steps[i];if(s.mem)for(const k in s.mem){if(s.mem[k]===null)delete mem[k];else mem[k]=s.mem[k];}if(s.out)out+=s.out;}return{mem,out};}
+  function show(v){
+    if(Array.isArray(v))return '<div class="arr">'+v.map((x,i)=>'<div class="ac"><span class="cell">'+esc(x)+'</span><small>['+i+']</small></div>').join('')+'</div>';
+    if(v&&typeof v==='object'&&v.f)return '<div class="rec">'+Object.keys(v.f).map(k=>'<span>'+esc(k)+' : <b>'+esc(v.f[k])+'</b></span>').join('')+'</div>'+(v.a?'<small>'+esc(v.a)+'</small>':'');
+    if(v&&typeof v==='object')return '<span class="cell">'+esc(v.v)+'</span><small>'+esc(v.a)+'</small>';
+    return '<span class="cell">'+esc(v)+'</span>';
+  }
+  function render(){
+    const cur=stateAt(step),prev=stateAt(Math.max(0,step-1));
+    lines.forEach((el,i)=>el.classList.toggle('on',step>0&&T.steps[step-1].ln===i));
+    const keys=Object.keys(cur.mem);
+    q('.tr-mem').innerHTML=keys.length?keys.map(k=>'<div class="named'+(step>0&&JSON.stringify(cur.mem[k])!==JSON.stringify(prev.mem[k])?' changed':'')+'"><span class="nametag">'+esc(k)+'</span>'+show(cur.mem[k])+'</div>').join(''):'<span class="empty">아직 만든 변수가 없어요</span>';
+    q('.tr-out').textContent=cur.out;
+    q('.tr-note').textContent=step===0?'"다음 줄 실행"을 눌러 시작해요.':T.steps[step-1].note;
+    q('.pos').textContent=step+' / '+T.steps.length;
+    q('[data-a=prev]').disabled=q('[data-a=reset]').disabled=step===0;
+    q('[data-a=next]').disabled=step===T.steps.length;
+  }
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='next'&&step<T.steps.length)step++;else if(a==='prev'&&step>0)step--;else if(a==='reset')step=0;else return;render();});
+  render();
+})();
+</script>
+
+</body>
+</html>

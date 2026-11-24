@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>C 기초 학습 자료</title>
+
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: 한 칼럼 목차. 상단 소개 + 커리큘럼 링크, 아래 주차별 카드 묶음 */
+:root{--bg:#f3f6fa;--surface:#ffffff;--fg:#1d2533;--muted:#5c6779;--line:#dde3ec;--accent:#2d63a6;--accent-soft:#e3edf9;--tag:#f5c64a;--tag-fg:#3a2c00;
+  --font-display:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;--font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#11151b;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#86b4ea;--accent-soft:#1c2a3b;--tag:#e8b93a;--tag-fg:#2a1f00;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11151b;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#86b4ea;--accent-soft:#1c2a3b;--tag:#e8b93a;--tag-fg:#2a1f00;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.65}
+.wrap{max-width:820px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left,0px)) 80px max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(30px,6vw,44px);line-height:1.2;margin:6px 0 10px}
+.lead{color:var(--muted);margin:0 0 22px;max-width:60ch}
+.cur{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--accent-soft);border-radius:14px;text-decoration:none;color:var(--fg);margin-bottom:34px}
+.cur b{font-size:17px}.cur span{color:var(--muted);font-size:14px}.cur i{margin-left:auto;font-style:normal;color:var(--accent);font-weight:700}
+.cur:hover{outline:2px solid var(--accent)}
+h2{font-size:15px;color:var(--muted);font-weight:600;margin:28px 0 10px;font-family:var(--font-mono)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.card{display:grid;gap:4px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--fg);transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card .n{font-family:var(--font-mono);font-size:12px;color:var(--accent);font-weight:700}
+.card .t{font-family:var(--font-display);font-size:22px;line-height:1.2}
+.card .d{font-size:14px;color:var(--muted)}
+footer{margin-top:40px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+<div class="wrap">
+  <div class="eyebrow">C 기초 · 학습 자료</div>
+  <h1>C언어, 처음부터 하나씩</h1>
+  <p class="lead">수업에서 배운 주제를 다시 볼 때 쓰는 자료예요. 페이지마다 정의, 문법, 직접 해 보기, 확인 문제, 자주 나는 오류 정리가 들어 있어요.</p>
+  <a class="cur" href="curriculum.html"><div><b>8개월 커리큘럼 전체 보기</b><br><span>C → C# → Unity 주차별 계획</span></div><i>→</i></a>
+  <div id="list"></div>
+  <footer>Visual Studio 기준으로 작성했어요. 에러 번호와 문구는 VS 버전이나 파일 확장자(.c / .cpp)에 따라 조금 다를 수 있어요.</footer>
+</div>
+<script>
+const GROUPS = [
+  ["1개월차 · 1주", [["c-variable.html","변수","값에 이름 짓기"],["c-datatype.html","자료형","값을 담는 상자의 종류"],["c-operator.html","연산자","계산하라고 시키는 기호"],["c-io.html","입/출력","컴퓨터와 말 주고받기"],["c-if.html","조건문","갈림길에서 길 고르기"]]],
+  ["1개월차 · 2주", [["c-loop.html","반복문","같은 일 여러 번 시키기"],["c-binary.html","2진법","0과 1로만 세기"],["c-memory.html","메모리","번호 붙은 사물함"],["c-array.html","배열","값을 한 줄로 묶어 이름 하나로"]]],
+  ["1개월차 · 3–4주", [["c-string.html","문자열","글자 줄 끝에 멈춤 표시"],["c-debugger.html","디버거","멈춰 놓고 한 줄씩 보는 돋보기"],["c-func.html","함수","자주 하는 일에 이름 붙여 두기"],["c-random.html","랜덤","컴퓨터가 주사위 굴리기"]]],
+  ["2개월차 · 1주", [["c-pointer.html","포인터","주소를 적어 둔 쪽지"],["c-pointer2.html","포인터 2","쪽지를 들고 배열 위를 걷기"],["c-callvalue.html","Call by value","함수에는 복사본이 간다"],["c-callref.html","Call by reference","주소를 넘겨 원본 고치기"],["c-struct.html","구조체","여러 값을 묶어 나만의 자료형 만들기"]]],
+  ["2개월차 · 2주", [["c-linkedlist.html","링크드 리스트","다음 상자 주소를 든 상자들의 줄"]]],
+];
+let k = 0;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("list").innerHTML = GROUPS.map(([g, items]) =>
+  `<h2>${esc(g)}</h2><div class="grid">${items.map(([href,t,d]) =>
+    `<a class="card" href="${href}"><span class="n">${String(++k).padStart(2,"0")}</span><span class="t">${esc(t)}</span><span class="d">${esc(d)}</span></a>`).join("")}</div>`).join("");
+</script>
+
+</body>
+</html>

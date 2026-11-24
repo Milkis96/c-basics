@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>C 기초 · 연산자</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: C 기초 학습 자료 공통 틀. 한 칼럼, 강의 8단계 섹션, 이름표 상자 그림 */
+:root{--bg:#f3f6fa;--surface:#ffffff;--fg:#1d2533;--muted:#5c6779;--line:#dde3ec;--accent:#2d63a6;--accent-soft:#e3edf9;--tag:#f5c64a;--tag-fg:#3a2c00;--tag-soft:#fdf4d9;--code-bg:#1d2430;--code-fg:#e3e8ef;--code-dim:#8793a3;--code-kw:#8cc2f0;--code-num:#f2b77a;--code-str:#9fd6a8;--ok:#1d7357;--ok-soft:#e1f3ea;--bad:#b23b3b;--bad-soft:#fae5e5;--font-head:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;--font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.75}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:14px;margin-bottom:24px}
+.crumb{font-size:13px;color:var(--muted);font-weight:600}
+h1{margin:0;font-family:var(--font-head);font-weight:400;font-size:clamp(34px,7vw,50px);line-height:1.2;text-wrap:balance}
+h1 .sub{display:block;font-size:.5em;color:var(--accent)}
+.lead{margin:0;color:var(--muted);max-width:60ch;font-size:17.5px}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;margin:6px 0 30px}
+.hero .eq{font-family:var(--font-head);font-size:22px;color:var(--muted)}
+.chip{font-family:var(--font-mono);font-size:26px;font-weight:700;padding:8px 18px;border-radius:14px;background:var(--accent-soft);color:var(--accent)}
+.chip.y{background:var(--tag);color:var(--tag-fg)}
+.named{display:grid;justify-items:center;gap:6px}
+.nametag{font-family:var(--font-head);font-size:19px;background:var(--tag);color:var(--tag-fg);padding:2px 16px;border-radius:8px;transform:rotate(-3deg)}
+.cell{font-family:var(--font-mono);font-size:24px;font-weight:700;min-width:80px;text-align:center;padding:10px 14px;border:3px solid var(--accent);border-radius:14px;background:var(--surface)}
+.named small{font-size:12.5px;color:var(--muted);font-family:var(--font-mono)}
+nav.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 40px}
+nav.steps a{font-size:14.5px;text-decoration:none;color:var(--fg);padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.steps a b{color:var(--accent);margin-right:5px}
+nav.steps a:hover,nav.steps a:focus-visible{border-color:var(--accent);outline:none}
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:400;font-size:28px;margin:0 0 16px;text-wrap:balance}
+h2 .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:20px;flex-shrink:0}
+h3{font-family:var(--font-head);font-weight:400;font-size:21px;margin:26px 0 10px}
+p{margin:0 0 14px;max-width:64ch}
+.key{background:var(--tag-soft);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-size:20px;font-weight:700;line-height:1.5}
+.key small{display:block;font-weight:400;font-size:15.5px;color:var(--muted);margin-top:6px}
+code.i{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px}
+.story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.story>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.story .who{font-weight:700;margin-bottom:4px}.story .bad{color:var(--bad)}.story .good{color:var(--ok)}
+.story .res{font-size:15px;color:var(--muted);margin-top:4px}
+@media (max-width:600px){.story{grid-template-columns:1fr}}
+pre.code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;line-height:1.7;padding:16px 18px;border-radius:12px;overflow-x:auto;margin:0 0 16px}
+.c{color:var(--code-dim)}.k{color:var(--code-kw)}.nm{color:var(--code-num)}.s{color:var(--code-str)}
+.parts{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:4px 0 18px}
+.part{display:grid;justify-items:center;gap:6px}
+.part code{font-family:var(--font-mono);font-size:22px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:2px solid var(--line)}
+.part span{font-size:13.5px;color:var(--muted);font-weight:600}
+.part.p-a code{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.part.p-b code{background:var(--tag);border-color:var(--tag);color:var(--tag-fg)}
+.part.p-c code{color:var(--code-num);border-color:var(--code-num)}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+.way.main{border:2px solid var(--accent)}
+.way-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.way-head h3{margin:0}
+.badge{font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent);color:var(--surface)}
+.way pre.code,.way p,.way .tablewrap{margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.card .t{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--accent)}
+.card .w{font-weight:700}.card .e{font-size:15px;color:var(--muted)}
+.card pre{margin:4px 0 0;font-family:var(--font-mono);font-size:14px;background:var(--bg);padding:7px 11px;border-radius:8px;overflow-x:auto}
+.tablewrap{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--bg)}
+td.m{font-family:var(--font-mono)}
+.secret{background:var(--surface);border:2px dashed var(--tag);border-radius:16px;padding:16px 20px;margin:0 0 14px}
+.secret h3{margin:0 0 8px}.secret pre.code{margin:8px 0}
+.tracer{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.tr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:620px){.tr-body{grid-template-columns:1fr}}
+.tr-code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:14.5px;padding:14px 0;overflow-x:auto;min-width:0}
+.tr-line{padding:3px 16px;white-space:pre;display:flex;gap:12px;border-left:4px solid transparent}
+.tr-line .ln{color:var(--code-dim);width:1.4em;text-align:right;flex-shrink:0}
+.tr-line.on{background:rgba(140,194,240,.18);border-left-color:var(--tag)}
+.tr-state{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
+.lbl{font-size:13px;color:var(--muted);font-weight:700}
+.tr-mem{display:flex;gap:16px;flex-wrap:wrap;min-height:100px;align-items:flex-end}
+.tr-mem .cell{font-size:20px;min-width:64px}
+.tr-mem .named.changed>.cell,.tr-mem .named.changed .rec,.tr-mem .named.changed .arr{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+.arr{display:flex;gap:4px;flex-wrap:wrap}.arr .ac{display:grid;justify-items:center;gap:2px}
+.arr .cell{min-width:48px;font-size:18px;padding:8px}
+.arr small{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.rec{border:3px solid var(--accent);border-radius:14px;background:var(--surface);padding:8px 14px;font-family:var(--font-mono);font-size:15px;display:grid;gap:2px}
+.empty{color:var(--muted);font-size:15px}
+.tr-out{font-family:var(--font-mono);font-size:15px;background:var(--bg);border-radius:10px;padding:8px 12px;min-height:64px;white-space:pre-wrap}
+.tr-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px;min-height:50px}
+.tr-ctrl{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.tr-ctrl .pos{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+button{font-family:var(--font-body);font-size:15px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:14px;margin-bottom:16px}
+.lab-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lab label{font-weight:700;font-size:14.5px;min-width:7em}
+.lab input[type=range]{accent-color:var(--accent);flex:1;min-width:140px}
+.lab .val{font-family:var(--font-mono);font-weight:700;font-size:18px;min-width:2em}
+.lab pre.code{margin:0}
+.screen{font-family:var(--font-mono);font-size:17px;background:var(--bg);border-radius:10px;padding:8px 12px}
+.lab-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px}
+.q-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.q-head b{font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--accent)}
+.q-type{font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.q-type.hard{background:var(--tag-soft);color:var(--tag-fg)}
+.q p{margin-bottom:10px}.q ul{margin:0 0 10px;padding-left:22px}
+details{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details .ans{padding-top:8px}details .ans p{margin-bottom:6px}
+.trap{font-size:14.5px;background:var(--tag-soft);border-radius:10px;padding:8px 14px;margin-top:6px}
+.err{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.err-sym{padding:14px 20px;background:var(--bad-soft);display:grid;gap:4px}
+.err-sym .s1{font-weight:700;color:var(--bad);font-size:17.5px}
+.err-sym .msg{font-family:var(--font-mono);font-size:13px;color:var(--fg);opacity:.85;word-break:break-all}
+.err-body{padding:14px 20px;display:grid;gap:8px}
+.err-body .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.err-body .row b{color:var(--muted);font-size:14.5px;padding-top:2px}
+.err-body .row>span{min-width:0}
+.err-body pre.code{margin:6px 0 0;font-size:14px;padding:10px 14px}
+@media (max-width:480px){.err-body .row{grid-template-columns:1fr;gap:0}}
+.note-small{font-size:14px;color:var(--muted)}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px}
+.lk .when{font-size:13px;color:var(--accent);font-weight:700}
+.lk .what{font-family:var(--font-head);font-size:19px}
+.lk .why{font-size:14.5px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+/* 이 페이지 전용: 사탕 나누기 */
+.candy{display:grid;gap:6px}
+.crow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.crow .who{font-size:14px;font-weight:700;width:4.5em;color:var(--muted)}
+.dots{display:flex;gap:4px;flex-wrap:wrap}
+.dots i{width:18px;height:18px;border-radius:50%;background:var(--accent)}
+.dots.left i{background:var(--tag)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="crumb">1개월차 · 1주차 · C언어</div>
+  <h1>연산자<span class="sub">계산하라고 시키는 기호</span></h1>
+  <p class="lead">더하고, 빼고, 나누고, 나머지를 구하는 기호예요. 게임 점수를 올리거나 체력을 깎을 때 모두 연산자를 써요.</p>
+</header>
+
+<div class="hero" aria-label="7 더하기 3은 10">
+  <span class="chip">7</span><span class="chip y">+</span><span class="chip">3</span><span class="eq">→</span><span class="chip">10</span>
+</div>
+
+<nav class="steps" aria-label="학습 단계">
+  <a href="#s1"><b>1</b>연산자란?</a><a href="#s2"><b>2</b>왜 필요해?</a><a href="#s3"><b>3</b>쓰는 법</a><a href="#s4"><b>4</b>연산자 종류</a><a href="#s5"><b>5</b>사탕 나누기</a><a href="#s6"><b>6</b>문제 풀기</a><a href="#s7"><b>7</b>이럴 땐?</a><a href="#s8"><b>8</b>다음에 배울 것</a>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>연산자란?</h2>
+  <div class="key">연산자는 값으로 계산하라고 시키는 기호예요.<small>수학 시간의 +, - 와 비슷해요. 몇 개는 모양이나 뜻이 조금 달라요.</small></div>
+  <p>계산에 쓰는 값을 <b>피연산자</b>라고 해요. <code class="i">7 + 3</code>에서 7과 3이 피연산자, +가 연산자예요. 계산이 끝나면 결과 값 하나가 나와요.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>왜 필요해?</h2>
+  <p>게임 속에서는 계속 계산이 일어나요.</p>
+  <div class="cards">
+    <div class="card"><span class="w">몬스터를 잡으면</span><pre>score = score + 10;</pre><span class="e">점수가 10 올라가요</span></div>
+    <div class="card"><span class="w">공격을 받으면</span><pre>hp = hp - damage;</pre><span class="e">체력이 깎여요</span></div>
+    <div class="card"><span class="w">짝수 턴인지 알고 싶으면</span><pre>turn % 2</pre><span class="e">0이면 짝수예요</span></div>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>쓰는 법</h2>
+  <p>연산자는 보통 값 두 개 사이에 써요. 계산한 결과는 <code class="i">=</code>로 변수에 넣어 두어요.</p>
+  <div class="parts">
+    <div class="part p-b"><code>sum</code><span>결과 넣을 곳</span></div>
+    <div class="part"><code>=</code><span>넣어라</span></div>
+    <div class="part p-c"><code>a</code><span>값</span></div>
+    <div class="part p-a"><code>+</code><span>연산자</span></div>
+    <div class="part p-c"><code>b</code><span>값</span></div>
+    <div class="part"><code>;</code><span>끝!</span></div>
+  </div>
+  <p>컴퓨터는 <b>오른쪽을 먼저 계산</b>하고 그 결과를 왼쪽에 넣어요.</p>
+<pre class="code">int a = 7;
+int b = 3;
+int sum = a + b;      // 10
+printf("%d\n", a * b); // 21 (바로 출력해도 돼요)</pre>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>연산자 종류</h2>
+  <h3>계산하는 연산자</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>기호</th><th>뜻</th><th>예시</th><th>결과</th></tr></thead>
+    <tbody>
+      <tr><td class="m">+</td><td>더하기</td><td class="m">7 + 2</td><td class="m">9</td></tr>
+      <tr><td class="m">-</td><td>빼기</td><td class="m">7 - 2</td><td class="m">5</td></tr>
+      <tr><td class="m">*</td><td>곱하기 (× 대신 *)</td><td class="m">7 * 2</td><td class="m">14</td></tr>
+      <tr><td class="m">/</td><td>나누기 (정수끼리면 몫만)</td><td class="m">7 / 2</td><td class="m">3</td></tr>
+      <tr><td class="m">%</td><td>나머지</td><td class="m">7 % 2</td><td class="m">1</td></tr>
+    </tbody></table></div>
+  <p><b>/ 와 % 는 짝꿍이에요.</b> 사탕 7개를 2명에게 나눠 주면 한 명당 3개(<code class="i">7 / 2</code>), 남는 건 1개(<code class="i">7 % 2</code>)예요. %는 정수에만 쓸 수 있어요.</p>
+
+  <h3>줄여 쓰는 연산자</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>줄여 쓰기</th><th>원래 모양</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td class="m">hp -= 10;</td><td class="m">hp = hp - 10;</td><td>hp에서 10 빼기</td></tr>
+      <tr><td class="m">score += 5;</td><td class="m">score = score + 5;</td><td>score에 5 더하기</td></tr>
+      <tr><td class="m">gold *= 2;</td><td class="m">gold = gold * 2;</td><td>gold 두 배</td></tr>
+      <tr><td class="m">count++;</td><td class="m">count = count + 1;</td><td>1 올리기</td></tr>
+      <tr><td class="m">count--;</td><td class="m">count = count - 1;</td><td>1 내리기</td></tr>
+    </tbody></table></div>
+
+  <h3>계산 순서</h3>
+  <p>수학과 똑같이 <code class="i">*</code> <code class="i">/</code> <code class="i">%</code>를 <code class="i">+</code> <code class="i">-</code>보다 먼저 계산해요. 먼저 하고 싶은 건 괄호로 묶어요.</p>
+<pre class="code">int x = 2 + 3 * 4;    // 14 (3 * 4 먼저)
+int y = (2 + 3) * 4;  // 20 (괄호 먼저)</pre>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>사탕 나누기</h2>
+  <p>막대를 움직여 사탕 개수와 친구 수를 바꿔 보세요. <code class="i">/</code>와 <code class="i">%</code>가 어떻게 바뀌는지 볼 수 있어요.</p>
+  <div class="lab">
+    <div class="lab-row"><label for="cd-a">사탕 개수 a</label><input type="range" id="cd-a" min="1" max="30" value="17"><span class="val" id="cd-av">17</span></div>
+    <div class="lab-row"><label for="cd-b">친구 수 b</label><input type="range" id="cd-b" min="1" max="6" value="5"><span class="val" id="cd-bv">5</span></div>
+    <div class="candy" id="cd-pic" aria-live="polite"></div>
+    <pre class="code" id="cd-code"></pre>
+    <div class="lab-note" id="cd-note"></div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>문제 풀기</h2>
+  <p>머릿속으로 먼저 계산해 보고 정답을 열어 보세요.</p>
+  <div class="q"><div class="q-head"><b>1번</b><span class="q-type">결과 맞히기</span></div>
+<pre class="code">printf("%d", 17 / 5);</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>3</b>이에요. 정수끼리 나누면 몫만 남아요.</p><div class="trap">많이 틀리는 답: 3.4</div></div></details></div>
+  <div class="q"><div class="q-head"><b>2번</b><span class="q-type">결과 맞히기</span></div>
+<pre class="code">printf("%d", 17 % 5);</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>2</b>예요. 17을 5로 나누면 몫 3, 나머지 2예요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>3번</b><span class="q-type">결과 맞히기</span></div>
+<pre class="code">printf("%d", 2 + 3 * 4);</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>14</b>예요. 곱하기를 먼저 해요. 3 × 4 = 12, 12 + 2 = 14.</p><div class="trap">많이 틀리는 답: 20 (앞에서부터 계산해서)</div></div></details></div>
+  <div class="q"><div class="q-head"><b>4번</b><span class="q-type">결과 맞히기</span></div>
+<pre class="code">int a = 5;
+a += 3;
+a *= 2;
+printf("%d", a);</pre>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>16</b>이에요. 5 → 8 → 16 순서로 바뀌어요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div>
+    <p>정수 <code class="i">n</code>이 짝수인지 알고 싶어요. 어떤 계산을 하면 될까요?</p>
+    <details><summary>정답 보기</summary><div class="ans"><p><code class="i">n % 2</code>를 계산해요. 결과가 <b>0이면 짝수</b>, 1이면 홀수예요. 2로 나눠서 남는 게 없으면 짝수니까요. 조건문을 배우면 <code class="i">if (n % 2 == 0)</code>으로 써요.</p></div></details></div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>이럴 땐?</h2>
+  <div class="err"><div class="err-sym"><span class="s1">나눗셈 결과에서 소수점이 사라져요</span><span class="msg">7 / 2  →  3</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>정수끼리 나누면 몫만 남아요.</span></div>
+      <div class="row"><b>어떻게?</b><span>둘 중 하나를 소수로 바꿔요.<pre class="code">float r = 7.0f / 2;          // 3.5
+float r2 = (float)a / b;     // 변수라면 (float)를 앞에</pre></span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">0으로 나눴더니 에러가 나거나 프로그램이 멈춰요</span><span class="msg">error C2124: 0으로 나누거나 나머지 연산을 합니다.  ·  Integer division by zero</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>어떤 수도 0으로 나눌 수 없어요. 수학에서도 안 되는 계산이에요.</span></div>
+      <div class="row"><b>어떻게?</b><span>나누기 전에 나누는 수가 0이 아닌지 확인해요. (조건문에서 배워요)</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">float에 %를 쓰니 에러가 나요</span><span class="msg">error C2296 / C2297: '%': 잘못된 피연산자 형식</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>나머지 연산자 %는 정수끼리만 쓸 수 있어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>%를 쓸 값은 int로 만들어요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">평균을 구했는데 값이 이상해요</span><span class="msg">int avg = a + b / 2;</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>나누기를 먼저 해서 <code class="i">a + (b / 2)</code>가 됐어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>더하기를 괄호로 묶어요. <code class="i">(a + b) / 2</code></span></div></div></div>
+  <p class="note-small">에러 번호와 문구는 Visual Studio 기준이에요. 파일 종류(.c/.cpp)와 버전에 따라 조금 다를 수 있어요.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>다음에 배울 것</h2>
+  <div class="links">
+    <div class="lk"><span class="when">1주차</span><span class="what">입/출력</span><span class="why">계산 결과를 보여 주고, 계산할 값 입력받기</span></div>
+    <div class="lk"><span class="when">1주차</span><span class="what">조건문</span><span class="why">크다, 작다, 같다를 비교하는 연산자</span></div>
+    <div class="lk"><span class="when">2주차</span><span class="what">반복문</span><span class="why">count++가 주인공이에요</span></div>
+  </div>
+</section>
+<footer>C 기초 학습 자료 · 연산자 · 이전: 자료형 · 다음: 입/출력</footer>
+</div>
+
+<script>
+(function(){
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  function hl(src){let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  window.hlC=hl;
+  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent)});
+})();
+(function(){
+  const $=id=>document.getElementById(id);
+  function draw(){
+    const a=+$('cd-a').value,b=+$('cd-b').value,q=Math.floor(a/b),r=a%b;
+    $('cd-av').textContent=a;$('cd-bv').textContent=b;
+    let h='';
+    for(let i=0;i<b;i++)h+='<div class="crow"><span class="who">친구 '+(i+1)+'</span><div class="dots">'+'<i></i>'.repeat(q)+'</div></div>';
+    h+='<div class="crow"><span class="who">남은 사탕</span><div class="dots left">'+'<i></i>'.repeat(r)+'</div>'+(r?'':'<span class="note-small">없음</span>')+'</div>';
+    $('cd-pic').innerHTML=h;
+    $('cd-code').innerHTML=window.hlC('int a = '+a+';\nint b = '+b+';\nprintf("%d", a / b);   // '+q+'\nprintf("%d", a % b);   // '+r);
+    $('cd-note').textContent='사탕 '+a+'개를 '+b+'명에게 나누면 한 명당 '+q+'개('+a+' / '+b+'), 남는 사탕은 '+r+'개('+a+' % '+b+')예요.';
+  }
+  $('cd-a').oninput=draw;$('cd-b').oninput=draw;draw();
+})();
+</script>
+
+</body>
+</html>
