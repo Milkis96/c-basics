@@ -144,14 +144,33 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
 .rent .note{font-family:var(--font-mono);font-size:16px;background:var(--tag-soft);border:2px dashed var(--tag);border-radius:10px;padding:8px 12px}
 .rent .arrow{font-family:var(--font-head);font-size:22px;color:var(--muted)}
 .rent .blk{display:flex;gap:3px}
+.langbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin:0 0 6px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;border-bottom:1px solid var(--line)}
+.langbar .lbl{font-size:14px;font-weight:700;color:var(--muted)}
+.seg{display:inline-flex;border:2px solid var(--accent);border-radius:999px;overflow:hidden}
+.seg button{border:0;border-radius:0;margin:0;padding:7px 14px;font-weight:700;background:transparent;color:var(--accent)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.langbar .hint{font-size:13.5px;color:var(--muted)}
+body:not(.lang-malloc) [data-lang="malloc"]{display:none!important}
+body.lang-malloc [data-lang="new"]{display:none!important}
+.cs{border-left:4px solid var(--accent);background:var(--surface);border-radius:0 12px 12px 0;padding:10px 16px;margin:12px 0}
+.cs h3{margin:0 0 6px;font-size:16px}
+.cs pre.code{margin:6px 0}
+.cs p{margin:6px 0}
 </style>
 
 <div class="wrap">
 <header>
-  <div class="crumb">2개월차 · 2주차 · C언어</div>
+  <div class="crumb">2개월차 · 2주차 · C/C++</div>
   <h1>동적 할당<span class="sub">필요할 때 필요한 만큼 메모리 빌리기</span></h1>
   <p class="lead">지금까지 변수와 배열은 코드를 쓸 때 크기가 정해졌어요. 동적 할당은 프로그램이 <b>실행되는 중에</b> "칸 몇 개 빌려 주세요" 하고 메모리를 빌리고, 다 쓰면 반납하는 방법이에요.</p>
 </header>
+
+<div class="langbar" role="group" aria-label="배우는 방식 고르기">
+  <span class="lbl">배우는 방식</span>
+  <span class="seg"><button type="button" data-set="new" aria-pressed="true">new / delete</button><button type="button" data-set="malloc" aria-pressed="false">malloc / free</button></span>
+  <span class="hint" data-lang="new">C++ 방식. C#도 new를 써요</span>
+  <span class="hint" data-lang="malloc">C 방식. 링크드 리스트 미션에서 써요</span>
+</div>
 
 <div class="hero" aria-label="arr 쪽지가 5000번을 가리키고, 5000번에 힙에서 빌린 칸 3개가 있어요">
   <div class="rent">
@@ -167,13 +186,27 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
 
 <section id="s1">
   <h2><span class="n">1</span>동적 할당이란?</h2>
-  <div class="key">실행 중에 메모리를 빌리고(malloc) 반납하는(free) 것이에요.<small>동적 = 실행하면서 정해진다. 할당 = 나눠 준다.</small></div>
+  <div data-lang="new">
+    <div class="key">실행 중에 메모리를 빌리고(new) 반납하는(delete) 것이에요.<small>동적 = 실행하면서 정해진다. 할당 = 나눠 준다.</small></div>
+  </div>
+  <div data-lang="malloc">
+    <div class="key">실행 중에 메모리를 빌리고(malloc) 반납하는(free) 것이에요.<small>동적 = 실행하면서 정해진다. 할당 = 나눠 준다.</small></div>
+  </div>
   <p>도서관에서 책을 빌리는 것과 같아요. 빌리면 <b>대출 번호(주소)</b>를 받고, 그 번호로 책을 찾아 써요. 다 읽으면 반납해야 다른 사람이 빌릴 수 있어요. 반납을 안 하면 도서관 책이 점점 줄어들어요.</p>
-  <ul>
+  <ul data-lang="new">
+    <li><b>new</b>: 자료형과 칸 수를 말하면 그만큼 빌려 주고, 시작 주소를 돌려줘요.</li>
+    <li><b>delete</b>: 빌린 주소를 주면 반납해요. 배열로 빌렸으면 <b>delete[]</b>.</li>
+    <li>빌린 메모리에는 이름이 없어요. 그래서 <b>포인터</b>로 주소를 들고 있어야 해요.</li>
+  </ul>
+  <ul data-lang="malloc">
     <li><b>malloc</b>: 바이트 수를 말하면 그만큼 빌려 주고, 시작 주소를 돌려줘요.</li>
     <li><b>free</b>: 빌린 주소를 주면 반납해요.</li>
     <li>빌린 메모리에는 이름이 없어요. 그래서 <b>포인터</b>로 주소를 들고 있어야 해요.</li>
   </ul>
+  <div class="secret" data-lang="new">
+    <h3>new는 C++ 문법이에요</h3>
+    <p>Visual Studio에서 파일 이름이 <code class="i">.cpp</code>여야 해요. <code class="i">.c</code> 파일에서는 new를 몰라요. printf, scanf_s, 포인터는 .cpp에서도 그대로 써요.</p>
+  </div>
 </section>
 
 <section id="s2">
@@ -184,25 +217,73 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   </div>
   <div class="cards">
     <div class="card"><span class="w">크기를 실행 중에 정하기</span><span class="e">입력받은 숫자만큼 배열을 만들 수 있어요.</span></div>
-    <div class="card"><span class="w">함수가 끝나도 남기기</span><span class="e">함수 안의 변수는 함수가 끝나면 사라지지만, 빌린 메모리는 free 전까지 남아요.</span></div>
-    <div class="card"><span class="w">링크드 리스트의 재료</span><span class="e">노드를 하나씩 필요할 때 만들려면 동적 할당이 필요해요.</span></div>
+    <div class="card"><span class="w">함수가 끝나도 남기기</span><span class="e">함수 안의 변수는 함수가 끝나면 사라지지만, 빌린 메모리는 반납 전까지 남아요.</span></div>
+    <div class="card"><span class="w">게임 오브젝트</span><span class="e">총알, 적처럼 실행 중에 생기고 사라지는 것들. 유니티에서도 같은 생각을 써요.</span></div>
   </div>
 </section>
 
 <section id="s3">
   <h2><span class="n">3</span>쓰는 법</h2>
-  <div class="way">
-    <div class="way-head"><span class="badge">빌리기</span><h3>malloc 한 줄 뜯어보기</h3></div>
-    <div class="parts">
-      <div class="part p-a"><code>int *arr</code><span>주소를 받을 포인터</span></div>
-      <div class="part"><code>=</code><span>넣어라</span></div>
-      <div class="part p-b"><code>(int *)</code><span>int 주소로 쓸게요</span></div>
-      <div class="part p-c"><code>malloc(sizeof(int) * n)</code><span>int n개 크기만큼 빌려 줘</span></div>
-      <div class="part"><code>;</code><span>끝!</span></div>
+
+  <div data-lang="new">
+    <div class="way">
+      <div class="way-head"><span class="badge">빌리기</span><h3>new 한 줄 뜯어보기</h3></div>
+      <div class="parts">
+        <div class="part p-a"><code>int *arr</code><span>주소를 받을 포인터</span></div>
+        <div class="part"><code>=</code><span>넣어라</span></div>
+        <div class="part p-b"><code>new</code><span>빌려 줘</span></div>
+        <div class="part p-c"><code>int[n]</code><span>int를 n칸</span></div>
+        <div class="part"><code>;</code><span>끝!</span></div>
+      </div>
+    </div>
+    <div class="way main">
+      <div class="way-head"><span class="badge">기본 순서</span><h3>빌리기 → 쓰기 → 반납</h3></div>
+<pre class="code">int n;
+scanf_s("%d", &amp;n);
+
+int *arr = new int[n];          // ① int n칸 빌리기
+for (int i = 0; i &lt; n; i++) {
+    arr[i] = 0;                 // ② 배열처럼 쓰기
+}
+delete[] arr;                   // ③ 반납 (배열이니까 [ ])
+arr = nullptr;                  //    반납한 주소 지우기</pre>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>빌리기</th><th>반납</th><th>뜻</th></tr></thead>
+      <tbody>
+        <tr><td class="m">new int</td><td class="m">delete p;</td><td>int 1칸</td></tr>
+        <tr><td class="m">new int(5)</td><td class="m">delete p;</td><td>int 1칸, 값 5로 시작</td></tr>
+        <tr><td class="m">new int[5]</td><td class="m">delete[] p;</td><td>int 5칸 (안은 쓰레기 값)</td></tr>
+        <tr><td class="m">new int[5]()</td><td class="m">delete[] p;</td><td>int 5칸, 모두 0</td></tr>
+      </tbody></table></div>
+    <ul>
+      <li><b>짝을 맞춰요.</b> <code class="i">new</code> ↔ <code class="i">delete</code>, <code class="i">new[]</code> ↔ <code class="i">delete[]</code>.</li>
+      <li>malloc과 달리 <b>sizeof도, (int *)도 필요 없어요.</b> 자료형을 보고 알아서 크기를 계산해요.</li>
+      <li><code class="i">new int(5)</code>와 <code class="i">new int[5]</code>는 완전히 달라요. 괄호 모양을 잘 보세요.</li>
+    </ul>
+    <div class="cs">
+      <h3>C#에서는</h3>
+<pre class="code">int n = 3;
+int[] arr = new int[n];   // * 없이 배열 자료형. 안은 모두 0
+arr[2] = 30;
+// delete 없음! 아무도 arr을 안 쓰면 가비지 컬렉터가 알아서 반납</pre>
+      <p>C#도 new로 빌리는 건 같아요. 대신 반납은 <b>가비지 컬렉터</b>가 대신해 줘서 delete를 쓰지 않아요.</p>
     </div>
   </div>
-  <div class="way main">
-    <div class="way-head"><span class="badge">기본 순서</span><h3>빌리기 → 확인 → 쓰기 → 반납</h3></div>
+
+  <div data-lang="malloc">
+    <div class="way">
+      <div class="way-head"><span class="badge">빌리기</span><h3>malloc 한 줄 뜯어보기</h3></div>
+      <div class="parts">
+        <div class="part p-a"><code>int *arr</code><span>주소를 받을 포인터</span></div>
+        <div class="part"><code>=</code><span>넣어라</span></div>
+        <div class="part p-b"><code>(int *)</code><span>int 주소로 쓸게요</span></div>
+        <div class="part p-c"><code>malloc(sizeof(int) * n)</code><span>int n개 크기만큼 빌려 줘</span></div>
+        <div class="part"><code>;</code><span>끝!</span></div>
+      </div>
+    </div>
+    <div class="way main">
+      <div class="way-head"><span class="badge">기본 순서</span><h3>빌리기 → 확인 → 쓰기 → 반납</h3></div>
 <pre class="code">#include &lt;stdlib.h&gt;                         // malloc, free가 여기 있어요
 
 int n;
@@ -218,12 +299,21 @@ for (int i = 0; i &lt; n; i++) {
 }
 free(arr);                                   // ④ 반납
 arr = NULL;                                  //    반납한 주소 지우기</pre>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>함수</th><th>하는 일</th><th>예시</th></tr></thead>
+      <tbody>
+        <tr><td class="m">malloc</td><td>빌리기. 안은 쓰레기 값</td><td class="m">malloc(sizeof(int) * 5)</td></tr>
+        <tr><td class="m">calloc</td><td>빌리고 모두 0으로 채우기</td><td class="m">calloc(5, sizeof(int))</td></tr>
+        <tr><td class="m">realloc</td><td>빌린 크기 바꾸기</td><td class="m">realloc(arr, sizeof(int) * 10)</td></tr>
+        <tr><td class="m">free</td><td>반납</td><td class="m">free(arr)</td></tr>
+      </tbody></table></div>
+    <ul>
+      <li><b>sizeof를 꼭 곱해요.</b> malloc은 칸 수가 아니라 <b>바이트 수</b>를 받아요. <code class="i">malloc(n)</code>은 n바이트, int로는 n/4칸뿐이에요.</li>
+      <li><b>(int *)</b>는 .cpp 파일에서 필요해요. 붙여 두면 .c, .cpp 둘 다 돼요.</li>
+      <li><b>free는 malloc 하나에 한 번.</b> 배열이든 하나든 똑같이 <code class="i">free(주소)</code>예요.</li>
+    </ul>
   </div>
-  <ul>
-    <li><b>sizeof를 꼭 곱해요.</b> malloc은 칸 수가 아니라 <b>바이트 수</b>를 받아요. <code class="i">malloc(n)</code>은 n바이트, int로는 n/4칸뿐이에요.</li>
-    <li><b>(int *)</b>는 .cpp 파일에서 필요해요. 붙여 두면 .c, .cpp 둘 다 돼요.</li>
-    <li>빌린 칸은 <code class="i">arr[i]</code>로 배열처럼 써요. 포인터 2에서 배운 그대로예요.</li>
-  </ul>
 </section>
 
 <section id="s4">
@@ -232,52 +322,97 @@ arr = NULL;                                  //    반납한 주소 지우기</p
   <div class="tablewrap"><table>
     <thead><tr><th></th><th>스택 (stack)</th><th>힙 (heap)</th></tr></thead>
     <tbody>
-      <tr><td>누가 사나</td><td>보통 변수, 배열, 매개변수</td><td>malloc으로 빌린 메모리</td></tr>
+      <tr><td>누가 사나</td><td>보통 변수, 배열, 매개변수</td><td>동적 할당으로 빌린 메모리</td></tr>
       <tr><td>크기 정하기</td><td>코드를 쓸 때</td><td>실행 중에</td></tr>
-      <tr><td>언제 사라지나</td><td>함수가 끝나면 <b>자동으로</b></td><td>free 할 때 (<b>직접</b>)</td></tr>
+      <tr><td>언제 사라지나</td><td>함수가 끝나면 <b>자동으로</b></td><td>반납할 때 (<b>직접</b>)</td></tr>
       <tr><td>이름</td><td>있음 (a, score...)</td><td>없음, 주소로만 찾아가요</td></tr>
       <tr><td>크기</td><td>작아요 (보통 1MB)</td><td>커요</td></tr>
     </tbody></table></div>
-  <h3>malloc 친구들</h3>
+  <h3>세 언어 한눈에 비교</h3>
   <div class="tablewrap"><table>
-    <thead><tr><th>함수</th><th>하는 일</th><th>예시</th></tr></thead>
+    <thead><tr><th></th><th>C</th><th>C++</th><th>C#</th></tr></thead>
     <tbody>
-      <tr><td class="m">malloc</td><td>빌리기. 안은 쓰레기 값</td><td class="m">malloc(sizeof(int) * 5)</td></tr>
-      <tr><td class="m">calloc</td><td>빌리고 모두 0으로 채우기</td><td class="m">calloc(5, sizeof(int))</td></tr>
-      <tr><td class="m">realloc</td><td>빌린 크기 바꾸기</td><td class="m">realloc(arr, sizeof(int) * 10)</td></tr>
-      <tr><td class="m">free</td><td>반납</td><td class="m">free(arr)</td></tr>
+      <tr><td>int 5칸 빌리기</td><td class="m">(int *)malloc(sizeof(int) * 5)</td><td class="m">new int[5]</td><td class="m">new int[5]</td></tr>
+      <tr><td>반납</td><td class="m">free(p)</td><td class="m">delete[] p</td><td>없음 (가비지 컬렉터)</td></tr>
+      <tr><td>크기 계산</td><td>직접 (sizeof)</td><td>자동</td><td>자동</td></tr>
+      <tr><td>처음 값</td><td>쓰레기 값</td><td>쓰레기 값 (<code class="i">()</code> 붙이면 0)</td><td>0</td></tr>
+      <tr><td>실패하면</td><td>NULL을 돌려줌</td><td>예외 발생</td><td>예외 발생</td></tr>
     </tbody></table></div>
   <div class="secret">
-    <h3>규칙 하나: malloc 한 번에 free 한 번</h3>
-    <p>빌린 횟수와 반납한 횟수가 같아야 해요. 덜 반납하면 <b>메모리 누수</b>, 두 번 반납하면 프로그램이 멈춰요.</p>
+    <h3>규칙 하나: 빌린 방식으로 한 번 반납</h3>
+    <p data-lang="new">new는 delete로, new[]는 delete[]로, 딱 한 번. malloc으로 빌린 걸 delete 하거나 new로 빌린 걸 free 하면 안 돼요. 덜 반납하면 <b>메모리 누수</b>, 두 번 반납하면 프로그램이 멈춰요.</p>
+    <p data-lang="malloc">malloc 한 번에 free 한 번. new로 빌린 걸 free 하거나 malloc으로 빌린 걸 delete 하면 안 돼요. 덜 반납하면 <b>메모리 누수</b>, 두 번 반납하면 프로그램이 멈춰요.</p>
   </div>
 </section>
 
 <section id="s5">
   <h2><span class="n">5</span>빌리고 반납하기</h2>
   <p>n을 3으로 입력했다고 해 볼게요. 힙의 5000번부터 3칸을 빌렸다고 할게요.</p>
-  <div id="tracer"></div>
+  <div data-lang="new"><div data-trace="new"></div></div>
+  <div data-lang="malloc"><div data-trace="malloc"></div></div>
 </section>
 
 <section id="s6">
   <h2><span class="n">6</span>문제 풀기</h2>
-  <div class="q"><div class="q-head"><b>1번</b><span class="q-type">써 보기</span></div><p>double 10개를 담을 메모리를 빌려서 포인터 <code class="i">d</code>에 담는 한 줄을 써 보세요.</p>
-    <details><summary>정답 보기</summary><div class="ans"><pre class="code">double *d = (double *)malloc(sizeof(double) * 10);</pre><div class="trap">많이 틀리는 답: malloc(10) (바이트 수인 걸 잊어서)</div></div></details></div>
-  <div class="q"><div class="q-head"><b>2번</b><span class="q-type">개수 세기</span></div><p><code class="i">malloc(sizeof(int) * 4)</code>는 몇 바이트를 빌릴까요?</p>
-    <details><summary>정답 보기</summary><div class="ans"><p><b>16바이트</b>예요. int 하나가 4바이트, 4칸이니까요.</p></div></details></div>
-  <div class="q"><div class="q-head"><b>3번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">int *p = (int *)malloc(sizeof(int) * 3);
+  <div data-lang="new">
+    <div class="q"><div class="q-head"><b>1번</b><span class="q-type">써 보기</span></div><p>double 10칸을 빌려서 포인터 <code class="i">d</code>에 담는 한 줄을 써 보세요.</p>
+      <details><summary>정답 보기</summary><div class="ans"><pre class="code">double *d = new double[10];</pre><div class="trap">많이 틀리는 답: new double(10) (10이라는 값을 가진 double 1칸이 돼요)</div></div></details></div>
+    <div class="q"><div class="q-head"><b>2번</b><span class="q-type">짝 맞추기</span></div><pre class="code">int *a = new int;
+int *b = new int[5];</pre><p>a와 b를 각각 어떻게 반납할까요?</p>
+      <details><summary>정답 보기</summary><div class="ans"><pre class="code">delete a;
+delete[] b;</pre><div class="trap">많이 틀리는 답: delete b; ([ ]를 빼먹어서)</div></div></details></div>
+    <div class="q"><div class="q-head"><b>3번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">int *p = new int[3];
+p[0] = 1;
+delete[] p;
+printf("%d", p[0]);</pre>
+      <details><summary>정답 보기</summary><div class="ans"><p>마지막 줄: 이미 반납한 메모리를 읽었어요. 반납한 책을 다시 펼친 것과 같아요. delete는 다 쓴 <b>뒤에</b> 하고, 그다음 <code class="i">p = nullptr;</code>을 넣어 둬요.</p></div></details></div>
+    <div class="q"><div class="q-head"><b>4번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">void make() {
+    int *p = new int[100];
+    p[0] = 5;
+}
+// main에서 make()를 1000번 불러요</pre>
+      <details><summary>정답 보기</summary><div class="ans"><p>delete[]가 없어요. 함수가 끝나면 포인터 p는 사라지지만 빌린 400바이트는 그대로 남아요. 주소를 잃어버렸으니 반납할 방법도 없어요. 1000번이면 약 400KB가 새요. 이게 <b>메모리 누수</b>예요. (C#이었다면 가비지 컬렉터가 정리해 줘요.)</p><div class="trap">많이 틀리는 답: "함수가 끝나면 자동으로 사라진다" (그건 스택 변수만)</div></div></details></div>
+    <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div><p>학생 수 n을 입력받고, new로 n칸 배열을 만들어 점수를 입력받은 뒤 평균을 출력하세요. 마지막에 반납까지 해요. (.cpp 파일)</p>
+      <details><summary>정답 보기</summary><div class="ans"><pre class="code">#include &lt;stdio.h&gt;
+
+int main() {
+    int n, sum = 0;
+    printf("학생 수: ");
+    scanf_s("%d", &amp;n);
+
+    int *score = new int[n];
+
+    for (int i = 0; i &lt; n; i++) {
+        printf("%d번 점수: ", i + 1);
+        scanf_s("%d", &amp;score[i]);
+        sum += score[i];
+    }
+    printf("평균: %.1f\n", (double)sum / n);
+
+    delete[] score;
+    score = nullptr;
+    return 0;
+}</pre></div></details></div>
+  </div>
+
+  <div data-lang="malloc">
+    <div class="q"><div class="q-head"><b>1번</b><span class="q-type">써 보기</span></div><p>double 10개를 담을 메모리를 빌려서 포인터 <code class="i">d</code>에 담는 한 줄을 써 보세요.</p>
+      <details><summary>정답 보기</summary><div class="ans"><pre class="code">double *d = (double *)malloc(sizeof(double) * 10);</pre><div class="trap">많이 틀리는 답: malloc(10) (바이트 수인 걸 잊어서)</div></div></details></div>
+    <div class="q"><div class="q-head"><b>2번</b><span class="q-type">개수 세기</span></div><p><code class="i">malloc(sizeof(int) * 4)</code>는 몇 바이트를 빌릴까요?</p>
+      <details><summary>정답 보기</summary><div class="ans"><p><b>16바이트</b>예요. int 하나가 4바이트, 4칸이니까요.</p></div></details></div>
+    <div class="q"><div class="q-head"><b>3번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">int *p = (int *)malloc(sizeof(int) * 3);
 p[0] = 1;
 free(p);
 printf("%d", p[0]);</pre>
-    <details><summary>정답 보기</summary><div class="ans"><p>마지막 줄: 이미 반납한 메모리를 읽었어요. 반납한 책을 다시 펼친 것과 같아요. free는 다 쓴 <b>뒤에</b> 하고, free 후에는 <code class="i">p = NULL;</code>을 넣어 둬요.</p></div></details></div>
-  <div class="q"><div class="q-head"><b>4번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">void make(void) {
+      <details><summary>정답 보기</summary><div class="ans"><p>마지막 줄: 이미 반납한 메모리를 읽었어요. 반납한 책을 다시 펼친 것과 같아요. free는 다 쓴 <b>뒤에</b> 하고, free 후에는 <code class="i">p = NULL;</code>을 넣어 둬요.</p></div></details></div>
+    <div class="q"><div class="q-head"><b>4번</b><span class="q-type">틀린 것 찾기</span></div><pre class="code">void make(void) {
     int *p = (int *)malloc(sizeof(int) * 100);
     p[0] = 5;
 }
 // main에서 make()를 1000번 불러요</pre>
-    <details><summary>정답 보기</summary><div class="ans"><p>free가 없어요. 함수가 끝나면 포인터 p는 사라지지만 빌린 400바이트는 그대로 남아요. 주소를 잃어버렸으니 반납할 방법도 없어요. 1000번이면 약 400KB가 새요. 이게 <b>메모리 누수</b>예요.</p><div class="trap">많이 틀리는 답: "함수가 끝나면 자동으로 사라진다" (그건 스택 변수만)</div></div></details></div>
-  <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div><p>학생 수 n을 입력받고, 동적 할당으로 n칸 배열을 만들어 점수를 입력받은 뒤 평균을 출력하세요. 마지막에 반납까지 해요.</p>
-    <details><summary>정답 보기</summary><div class="ans"><pre class="code">#include &lt;stdio.h&gt;
+      <details><summary>정답 보기</summary><div class="ans"><p>free가 없어요. 함수가 끝나면 포인터 p는 사라지지만 빌린 400바이트는 그대로 남아요. 주소를 잃어버렸으니 반납할 방법도 없어요. 1000번이면 약 400KB가 새요. 이게 <b>메모리 누수</b>예요.</p><div class="trap">많이 틀리는 답: "함수가 끝나면 자동으로 사라진다" (그건 스택 변수만)</div></div></details></div>
+    <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div><p>학생 수 n을 입력받고, 동적 할당으로 n칸 배열을 만들어 점수를 입력받은 뒤 평균을 출력하세요. 마지막에 반납까지 해요.</p>
+      <details><summary>정답 보기</summary><div class="ans"><pre class="code">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 
 int main(void) {
@@ -299,43 +434,89 @@ int main(void) {
     score = NULL;
     return 0;
 }</pre></div></details></div>
+  </div>
 </section>
 
 <section id="s7">
   <h2><span class="n">7</span>이럴 땐?</h2>
-  <div class="err"><div class="err-sym"><span class="s1">malloc 줄에서 변환할 수 없다고 나와요</span><span class="msg">error C2440: '초기화 중': 'void *'에서 'int *'(으)로 변환할 수 없습니다.</span></div>
-    <div class="err-body"><div class="row"><b>왜?</b><span>파일이 .cpp라서 C++ 규칙을 따라요. malloc이 돌려주는 void *(아무 주소)를 그냥 넣을 수 없어요.</span></div>
-      <div class="row"><b>어떻게?</b><span>앞에 <code class="i">(int *)</code>처럼 받을 포인터 자료형을 붙여요.</span></div></div></div>
-  <div class="err"><div class="err-sym"><span class="s1">malloc을 모른다고 나와요</span><span class="msg">.c: warning C4013: 'malloc'이(가) 정의되지 않았습니다.  ·  .cpp: error C3861: 'malloc': 식별자를 찾을 수 없습니다.</span></div>
-    <div class="err-body"><div class="row"><b>왜?</b><span><code class="i">#include &lt;stdlib.h&gt;</code>를 빼먹었어요.</span></div>
-      <div class="row"><b>어떻게?</b><span>맨 위에 추가해요.</span></div></div></div>
-  <div class="err"><div class="err-sym"><span class="s1">초록 물결 경고가 생겨요</span><span class="msg">C6011: NULL 포인터 'arr'을(를) 역참조하고 있습니다.</span></div>
-    <div class="err-body"><div class="row"><b>왜?</b><span>malloc이 실패해서 NULL을 돌려줄 수도 있는데 확인 없이 썼어요.</span></div>
-      <div class="row"><b>어떻게?</b><span>빌린 직후에 <code class="i">if (arr == NULL)</code>로 확인해요.</span></div></div></div>
-  <div class="err"><div class="err-sym"><span class="s1">free 할 때 프로그램이 멈추며 창이 떠요</span><span class="msg">HEAP CORRUPTION DETECTED: after Normal block ... CRT detected that the application wrote to memory after end of heap buffer.</span></div>
-    <div class="err-body"><div class="row"><b>왜?</b><span>빌린 것보다 많은 칸에 썼어요. 보통 <code class="i">malloc(n)</code>처럼 sizeof를 빼먹었거나, 반복이 n칸을 넘었을 때예요.</span></div>
-      <div class="row"><b>어떻게?</b><span>malloc에 <code class="i">sizeof(자료형) * 칸 수</code>가 있는지, 반복 조건이 <code class="i">i &lt; n</code>인지 확인해요.</span></div></div></div>
-  <div class="err"><div class="err-sym"><span class="s1">free를 했는데 또 멈춰요</span><span class="msg">Debug Assertion Failed! Expression: _CrtIsValidHeapPointer(block)</span></div>
-    <div class="err-body"><div class="row"><b>왜?</b><span>같은 주소를 두 번 free 했거나, malloc으로 빌리지 않은 주소(보통 배열, 변수 주소)를 free 했어요.</span></div>
-      <div class="row"><b>어떻게?</b><span>free 후에 <code class="i">p = NULL;</code>을 넣어요. <code class="i">free(NULL)</code>은 아무 일도 안 해서 안전해요.</span></div></div></div>
-  <div class="err"><div class="err-sym"><span class="s1">반납한 뒤에 읽었더니 이상한 큰 음수가 나와요</span><span class="msg">-572662307  (0xDDDDDDDD)</span></div>
-    <div class="err-body"><div class="row"><b>왜?</b><span>Debug 모드에서 free된 칸은 0xDD로 채워져요. 반납한 메모리를 읽었다는 신호예요.</span></div>
-      <div class="row"><b>어떻게?</b><span>free는 그 메모리를 다 쓴 다음, 맨 마지막에 해요.</span></div></div></div>
+  <div data-lang="new">
+    <div class="err"><div class="err-sym"><span class="s1">new를 모른다고 나와요</span><span class="msg">error C2065: 'new': 선언되지 않은 식별자입니다.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>파일이 <code class="i">.c</code>예요. new는 C++ 문법이라 C 파일에서는 몰라요.</span></div>
+        <div class="row"><b>어떻게?</b><span>파일을 <code class="i">.cpp</code>로 만들어요. C 방식으로 하려면 위의 "malloc / free" 버튼을 눌러 보세요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">delete 줄에 초록 물결 경고가 생겨요</span><span class="msg">C6278: 'arr'이(가) 배열 new []로 할당되었지만 스칼라 delete로 삭제되었습니다.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span><code class="i">new int[n]</code>으로 빌리고 <code class="i">delete arr;</code>로 반납했어요. int 배열은 당장 멀쩡해 보일 수 있지만 규칙 위반이고, 나중에 클래스 배열에서는 프로그램이 멈춰요.</span></div>
+        <div class="row"><b>어떻게?</b><span><code class="i">delete[] arr;</code> 빌릴 때 [ ]가 있었으면 반납할 때도 [ ].</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">delete 할 때 프로그램이 멈추며 창이 떠요</span><span class="msg">HEAP CORRUPTION DETECTED: after Normal block ... CRT detected that the application wrote to memory after end of heap buffer.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>빌린 칸보다 많이 썼어요. 반복 조건이 <code class="i">i &lt;= n</code>이거나, <code class="i">new int(n)</code>으로 1칸만 빌려 놓고 n칸을 썼을 때예요.</span></div>
+        <div class="row"><b>어떻게?</b><span>빌린 줄이 <code class="i">new int[n]</code>인지(괄호 모양), 반복 조건이 <code class="i">i &lt; n</code>인지 확인해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">delete를 했는데 또 멈춰요</span><span class="msg">Debug Assertion Failed! Expression: _CrtIsValidHeapPointer(block)</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>같은 주소를 두 번 delete 했거나, new로 빌리지 않은 주소(보통 배열, 변수 주소)를 delete 했어요.</span></div>
+        <div class="row"><b>어떻게?</b><span>delete 후에 <code class="i">p = nullptr;</code>을 넣어요. <code class="i">delete nullptr</code>은 아무 일도 안 해서 안전해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">반납한 뒤에 읽었더니 이상한 큰 음수가 나와요</span><span class="msg">-572662307  (0xDDDDDDDD)</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>Debug 모드에서 반납된 칸은 0xDD로 채워져요. 반납한 메모리를 읽었다는 신호예요.</span></div>
+        <div class="row"><b>어떻게?</b><span>delete는 그 메모리를 다 쓴 다음, 맨 마지막에 해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">(C#) 실행 중에 빨간 에러가 떠요</span><span class="msg">NullReferenceException: Object reference not set to an instance of an object.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>C#에서 new를 안 하고 변수만 만든 채 썼어요. 쪽지에 아무 주소도 없는 상태예요. 유니티에서 가장 많이 보는 에러예요.</span></div>
+        <div class="row"><b>어떻게?</b><span>쓰기 전에 <code class="i">new</code>로 만들었는지, 유니티라면 인스펙터에 연결했는지 확인해요.</span></div></div></div>
+  </div>
+
+  <div data-lang="malloc">
+    <div class="err"><div class="err-sym"><span class="s1">malloc 줄에서 변환할 수 없다고 나와요</span><span class="msg">error C2440: '초기화 중': 'void *'에서 'int *'(으)로 변환할 수 없습니다.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>파일이 .cpp라서 C++ 규칙을 따라요. malloc이 돌려주는 void *(아무 주소)를 그냥 넣을 수 없어요.</span></div>
+        <div class="row"><b>어떻게?</b><span>앞에 <code class="i">(int *)</code>처럼 받을 포인터 자료형을 붙여요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">malloc을 모른다고 나와요</span><span class="msg">.c: warning C4013: 'malloc'이(가) 정의되지 않았습니다.  ·  .cpp: error C3861: 'malloc': 식별자를 찾을 수 없습니다.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span><code class="i">#include &lt;stdlib.h&gt;</code>를 빼먹었어요.</span></div>
+        <div class="row"><b>어떻게?</b><span>맨 위에 추가해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">초록 물결 경고가 생겨요</span><span class="msg">C6011: NULL 포인터 'arr'을(를) 역참조하고 있습니다.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>malloc이 실패해서 NULL을 돌려줄 수도 있는데 확인 없이 썼어요.</span></div>
+        <div class="row"><b>어떻게?</b><span>빌린 직후에 <code class="i">if (arr == NULL)</code>로 확인해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">free 할 때 프로그램이 멈추며 창이 떠요</span><span class="msg">HEAP CORRUPTION DETECTED: after Normal block ... CRT detected that the application wrote to memory after end of heap buffer.</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>빌린 것보다 많은 칸에 썼어요. 보통 <code class="i">malloc(n)</code>처럼 sizeof를 빼먹었거나, 반복이 n칸을 넘었을 때예요.</span></div>
+        <div class="row"><b>어떻게?</b><span>malloc에 <code class="i">sizeof(자료형) * 칸 수</code>가 있는지, 반복 조건이 <code class="i">i &lt; n</code>인지 확인해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">free를 했는데 또 멈춰요</span><span class="msg">Debug Assertion Failed! Expression: _CrtIsValidHeapPointer(block)</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>같은 주소를 두 번 free 했거나, malloc으로 빌리지 않은 주소(보통 배열, 변수 주소)를 free 했어요.</span></div>
+        <div class="row"><b>어떻게?</b><span>free 후에 <code class="i">p = NULL;</code>을 넣어요. <code class="i">free(NULL)</code>은 아무 일도 안 해서 안전해요.</span></div></div></div>
+    <div class="err"><div class="err-sym"><span class="s1">반납한 뒤에 읽었더니 이상한 큰 음수가 나와요</span><span class="msg">-572662307  (0xDDDDDDDD)</span></div>
+      <div class="err-body"><div class="row"><b>왜?</b><span>Debug 모드에서 free된 칸은 0xDD로 채워져요. 반납한 메모리를 읽었다는 신호예요.</span></div>
+        <div class="row"><b>어떻게?</b><span>free는 그 메모리를 다 쓴 다음, 맨 마지막에 해요.</span></div></div></div>
+  </div>
   <p class="note-small">에러 번호와 문구는 Visual Studio 기준이에요. 파일 종류(.c/.cpp)와 버전에 따라 조금 다를 수 있어요.</p>
 </section>
 
 <section id="s8">
   <h2><span class="n">8</span>다음에 배울 것</h2>
   <div class="links">
-    <div class="lk"><span class="when">2개월차 2주차</span><span class="what">링크드 리스트</span><span class="why">노드를 하나씩 malloc으로 만들고 free로 지우기</span></div>
-    <div class="lk"><span class="when">3개월차</span><span class="what">유니티 · C#</span><span class="why">C#의 new도 힙에 만들어요. 대신 free 없이 가비지 컬렉터가 정리해요</span></div>
+    <div class="lk"><span class="when">2개월차 2주차</span><span class="what">링크드 리스트</span><span class="why">노드를 하나씩 빌려서 만들고 반납하기 (미션은 malloc / free 기준)</span></div>
+    <div class="lk"><span class="when">3개월차</span><span class="what">유니티 · C#</span><span class="why">C#의 new도 힙에 만들어요. 대신 delete 없이 가비지 컬렉터가 정리해요</span></div>
     <div class="lk"><span class="when">3개월차</span><span class="what">Instantiate / Destroy</span><span class="why">게임 오브젝트를 실행 중에 만들고 없애기. 같은 생각이에요</span></div>
   </div>
 </section>
 <footer>C 기초 학습 자료 · 동적 할당 · 이전: 구조체 · 다음: 링크드 리스트</footer>
 </div>
 <script>
-window.TRACE={memLabel:'지금 있는 것 (스택 변수 + 힙)',code:[
+window.TRACES={
+new:{memLabel:'지금 있는 것 (스택 변수 + 힙)',code:[
+'int n = 3;',
+'int *arr = new int[n];',
+'for (int i = 0; i < n; i++)',
+'    arr[i] = (i + 1) * 10;',
+'printf("%d\\n", arr[2]);',
+'delete[] arr;',
+'arr = nullptr;'
+],steps:[
+{ln:0,mem:{n:3},note:'n = 3. 실행 중에 입력받은 값이라고 생각해요.'},
+{ln:1,mem:{arr:'→5000','힙@5000':['?','?','?']},note:'new int[3]: int 3칸을 빌렸어요. 크기 계산(3 × 4 = 12바이트)은 new가 알아서 해요. 안은 아직 쓰레기 값이고, arr에 주소 5000을 적었어요.'},
+{ln:2,mem:{i:0},note:'i = 0부터 n칸을 채워요.'},
+{ln:3,mem:{'힙@5000':[10,'?','?']},note:'arr[0] = 10. 빌린 칸을 배열처럼 써요.'},
+{ln:2,mem:{i:1},note:'i = 1.'},
+{ln:3,mem:{'힙@5000':[10,20,'?']},note:'arr[1] = 20.'},
+{ln:2,mem:{i:2},note:'i = 2.'},
+{ln:3,mem:{'힙@5000':[10,20,30]},note:'arr[2] = 30. 3칸을 다 채웠어요.'},
+{ln:4,mem:{i:null},out:'30\n',note:'반복이 끝나 i는 사라지고, arr[2]의 30을 출력해요.'},
+{ln:5,mem:{'힙@5000':null},note:'delete[] arr: 배열로 빌렸으니 [ ]를 붙여 3칸을 반납해요. 그런데 arr에는 여전히 5000이 적혀 있어요. 위험!'},
+{ln:6,mem:{arr:'nullptr'},note:'arr = nullptr: 반납한 주소를 지워요. new 1번, delete[] 1번. 끝! (C#이었다면 이 두 줄 없이 가비지 컬렉터가 처리해요)'}
+]},
+malloc:{memLabel:'지금 있는 것 (스택 변수 + 힙)',code:[
 'int n = 3;',
 'int *arr = (int *)malloc(sizeof(int) * n);',
 'if (arr == NULL) return 1;',
@@ -357,16 +538,30 @@ window.TRACE={memLabel:'지금 있는 것 (스택 변수 + 힙)',code:[
 {ln:5,mem:{i:null},out:'30\n',note:'반복이 끝나 i는 사라지고, arr[2]의 30을 출력해요.'},
 {ln:6,mem:{'힙@5000':null},note:'free(arr): 5000번부터 빌린 3칸을 반납했어요. 그런데 arr에는 여전히 5000이 적혀 있어요. 위험!'},
 {ln:7,mem:{arr:'NULL'},note:'arr = NULL: 반납한 주소를 지워서 실수로 다시 쓰지 않게 해요. 빌린 1번, 반납 1번. 끝!'}
-]};
+]}
+};
+(function(){
+  function setLang(l){
+    document.body.classList.toggle('lang-malloc',l==='malloc');
+    document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.set===l)));
+    try{localStorage.setItem('dynLang',l);}catch(e){}
+  }
+  window.addEventListener('DOMContentLoaded',function(){
+    let l='new';
+    try{const q=new URLSearchParams(location.search).get('lang');l=q||localStorage.getItem('dynLang')||'new';}catch(e){}
+    setLang(l==='malloc'?'malloc':'new');
+    document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setLang(b.dataset.set));
+  });
+})();
 </script>
 <script>
 (function(){
   const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef|new|delete|nullptr)\b|\b(\d+(?:\.\d+)?f?)\b/g;
   function hl(src){let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
   window.hlC=hl;
   document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent)});
-  const T=window.TRACE, root=document.getElementById('tracer');
+  function build(root,T){
   if(!T||!root) return;
   root.className='tracer';
   root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">화면에 나온 글자</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
@@ -394,6 +589,9 @@ window.TRACE={memLabel:'지금 있는 것 (스택 변수 + 힙)',code:[
   }
   root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='next'&&step<T.steps.length)step++;else if(a==='prev'&&step>0)step--;else if(a==='reset')step=0;else return;render();});
   render();
+  }
+  build(document.getElementById('tracer'),window.TRACE);
+  document.querySelectorAll('[data-trace]').forEach(el=>build(el,(window.TRACES||{})[el.dataset.trace]));
 })();
 </script>
 
