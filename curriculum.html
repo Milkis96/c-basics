@@ -103,14 +103,15 @@ footer{color:var(--muted);font-size:13px;margin-top:30px}
 // ───────── 커리큘럼 데이터 (여기만 고치면 페이지 전체가 바뀝니다) ─────────
 // track: c | cs | u   /  project: true 이면 실습 주차로 강조
 // 설명(d)은 문자열 하나 또는 배열(여러 줄 bullet)
-// LINKS: 주제 이름 → 학습 자료 파일 (1~2개월차 C 주제에만 적용)
+// LINKS: 주제 이름 → 학습 자료 파일
 const TRACKS = { c:"C 기초", u:"유니티 실전" };
 const LINKS = { "변수, 상수":"c-variable.html", "자료형":"c-datatype.html", "연산자":"c-operator.html", "입/출력":"c-io.html",
   "조건문":"c-if.html", "반복문":"c-loop.html", "2진법":"c-binary.html", "메모리":"c-memory.html", "배열":"c-array.html",
   "함수":"c-func.html", "랜덤":"c-random.html", "포인터 1":"c-pointer.html", "구조체":"c-struct.html",
   "문자열":"c-string.html", "디버거":"c-debugger.html", "포인터 2":"c-pointer2.html", "Call by value":"c-callvalue.html",
   "Call by reference":"c-callref.html", "링크드 리스트":"c-linkedlist.html", "동적 할당":"c-malloc.html",
-  "코딩 문제 풀이":"c-practice.html" };
+  "코딩 문제 풀이":"c-practice.html", "Start와 main":"u-start.html", "printf와 Debug.Log":"u-debuglog.html",
+  "컴포넌트":"u-component.html", "C와 C#의 배열 · 함수":"u-csharp.html", "UI (Canvas)":"u-canvas.html" };
 const DATA = [
   { m:1, track:"c", title:"C언어", sub:"프로그래밍 기초 문법", weeks:[
     { items:[["변수, 상수","데이터를 저장하는 변수와 변하지 않는 값인 상수"],["자료형","자료형의 종류"],["연산자","기본 연산 (+, -, /, %)"],["입/출력","입력 및 출력"],["조건문","if, switch 조건문"]] },
@@ -125,9 +126,9 @@ const DATA = [
     { items:[["코딩 문제 풀이","각자 수준에 맞는 문제로 부족한 부분 보완"]] },
   ]},
   { m:3, track:"u", title:"유니티 1", sub:"2D 게임 제작", weeks:[
-    { project:true, items:[["엔진 구조","유니티 엔진 구조"],["피하기 게임 (2D) 1/2",["박스, 구체 생성 및 제어","키보드 입력과 제어 방법","콜라이더 및 트리거","프리팹 개념","소스코드로 오브젝트 제어"]]] },
+    { project:true, items:[["Start와 main","유니티에는 main이 없고 Start · Update가 있어요"],["printf와 Debug.Log","Console 창에 값 찍어 보기"],["컴포넌트","오브젝트에 기능 부품 붙이기"],["C와 C#의 배열 · 함수","C 문법이 C#에서 달라지는 곳"],["엔진 구조","유니티 엔진 구조"],["피하기 게임 (2D) 1/2",["박스, 구체 생성 및 제어","키보드 입력과 제어 방법","콜라이더 및 트리거","프리팹 개념","소스코드로 오브젝트 제어"]]] },
     { project:true, items:[["피하기 게임 (2D) 2/2",["떨어지는 오브젝트의 속도·크기 다양화","이동속도 업 아이템 구현"]]] },
-    { project:true, items:[["종스크롤 슈팅 게임 (2D) 1/2",["플레이어와 적의 체력 설정","현재 체력, 점수 UI 표시"]]] },
+    { project:true, items:[["UI (Canvas)","Canvas로 글자 · 버튼 UI 만들기"],["종스크롤 슈팅 게임 (2D) 1/2",["플레이어와 적의 체력 설정","현재 체력, 점수 UI 표시"]]] },
     { project:true, items:[["종스크롤 슈팅 게임 (2D) 2/2",["등장하는 적의 패턴 추가","플레이어블 캐릭터 추가"]]] },
   ]},
   { m:4, track:"u", title:"유니티 2", sub:"UI 게임과 3D 물리 기초", weeks:[
@@ -153,7 +154,7 @@ const DATA = [
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const pad = n => String(n).padStart(2,"0");
 const desc = d => Array.isArray(d) ? "<ul>"+d.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>" : esc(d);
-const name = (mo, n) => (mo.track==="c" && LINKS[n]) ? `<a href="${LINKS[n]}">${esc(n)}</a>` : esc(n);
+const name = (mo, n) => LINKS[n] ? `<a href="${LINKS[n]}">${esc(n)}</a>` : esc(n);
 
 document.getElementById("track").innerHTML = DATA.map(mo =>
   `<a class="t-${mo.track}" href="#m${mo.m}"><span class="mn">${pad(mo.m)}</span><span class="mt">${esc(mo.title)}</span></a>`).join("");

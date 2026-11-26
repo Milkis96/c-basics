@@ -298,15 +298,19 @@ window.addEventListener('DOMContentLoaded',function(){
 (function(){
   const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
   const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef|new|delete|nullptr)\b|\b(\d+(?:\.\d+)?f?)\b/g;
-  function hl(src){let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  const CSK=/^(public|private|protected|class|using|static|string|bool|true|false|foreach|in|var|null|this|override|ref|out|base|namespace)$/;
+  const CK=/^(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|new|delete|typedef)$/;
+  const RXC=/(\/\/[^\n]*)|(\$?"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b([A-Za-z_]\w*)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  function hlCs(src){let out='',last=0;src.replace(RXC,(m,c,s,p,w,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;const kw=w&&(CSK.test(w)||CK.test(w));out+=(w&&!kw)?esc(m):'<span class="'+(c?'c':s?'s':(p||kw)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  function hl(src,cs){if(cs)return hlCs(src);let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
   window.hlC=hl;
-  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent)});
+  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent,p.classList.contains('cs'))});
   function build(root,T){
   if(!T||!root) return;
   root.className='tracer';
-  root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">화면에 나온 글자</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
+  root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">'+(T.outLabel||'화면에 나온 글자')+'</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
   const q=s=>root.querySelector(s);
-  q('.tr-code').innerHTML=T.code.map((l,i)=>'<div class="tr-line"><span class="ln">'+(i+1)+'</span><span>'+(hl(l)||' ')+'</span></div>').join('');
+  q('.tr-code').innerHTML=T.code.map((l,i)=>'<div class="tr-line"><span class="ln">'+(i+1)+'</span><span>'+(hl(l,T.cs)||' ')+'</span></div>').join('');
   const lines=[...root.querySelectorAll('.tr-line')];
   let step=0;
   function stateAt(n){const mem={};let out='';for(let i=0;i<n;i++){const s=T.steps[i];if(s.mem)for(const k in s.mem){if(s.mem[k]===null)delete mem[k];else mem[k]=s.mem[k];}if(s.out)out+=s.out;}return{mem,out};}

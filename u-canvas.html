@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{margin:0}img{max-width:100%}code,pre,kbd,.tr-code,.screen{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}</style>
+<title>유니티 기초 · UI (Canvas)</title>
+
+</head>
+<body>
+<a href="./" style="display:inline-block;margin:14px 16px 0;padding:6px 12px;border-radius:999px;background:var(--accent-soft,#e3edf9);color:var(--accent,#2d63a6);font:600 14px/1.4 'IBM Plex Sans KR','Malgun Gothic',sans-serif;text-decoration:none">← 전체 목차</a>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: C 기초 학습 자료 공통 틀. 한 칼럼, 강의 8단계 섹션, 이름표 상자 그림 */
+:root{--bg:#f3f6fa;--surface:#ffffff;--fg:#1d2533;--muted:#5c6779;--line:#dde3ec;--accent:#2d63a6;--accent-soft:#e3edf9;--tag:#f5c64a;--tag-fg:#3a2c00;--tag-soft:#fdf4d9;--code-bg:#1d2430;--code-fg:#e3e8ef;--code-dim:#8793a3;--code-kw:#8cc2f0;--code-num:#f2b77a;--code-str:#9fd6a8;--ok:#1d7357;--ok-soft:#e1f3ea;--bad:#b23b3b;--bad-soft:#fae5e5;--font-head:"Jua","IBM Plex Sans KR","Malgun Gothic",sans-serif;--font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12161c;--surface:#1a2029;--fg:#e7ebf1;--muted:#9ba6b6;--line:#2b3340;--accent:#82b2ea;--accent-soft:#1c2a3c;--tag:#e9bb45;--tag-fg:#2a2000;--tag-soft:#30291a;--code-bg:#0d1117;--ok:#6cc9a3;--ok-soft:#18302a;--bad:#f08a8a;--bad-soft:#3a1f22;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:17px;line-height:1.75}
+.wrap{max-width:760px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:grid;gap:14px;margin-bottom:24px}
+.crumb{font-size:13px;color:var(--muted);font-weight:600}
+h1{margin:0;font-family:var(--font-head);font-weight:400;font-size:clamp(34px,7vw,50px);line-height:1.2;text-wrap:balance}
+h1 .sub{display:block;font-size:.5em;color:var(--accent)}
+.lead{margin:0;color:var(--muted);max-width:60ch;font-size:17.5px}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;margin:6px 0 30px}
+.hero .eq{font-family:var(--font-head);font-size:22px;color:var(--muted)}
+.chip{font-family:var(--font-mono);font-size:26px;font-weight:700;padding:8px 18px;border-radius:14px;background:var(--accent-soft);color:var(--accent)}
+.chip.y{background:var(--tag);color:var(--tag-fg)}
+.named{display:grid;justify-items:center;gap:6px}
+.nametag{font-family:var(--font-head);font-size:19px;background:var(--tag);color:var(--tag-fg);padding:2px 16px;border-radius:8px;transform:rotate(-3deg)}
+.cell{font-family:var(--font-mono);font-size:24px;font-weight:700;min-width:80px;text-align:center;padding:10px 14px;border:3px solid var(--accent);border-radius:14px;background:var(--surface)}
+.named small{font-size:12.5px;color:var(--muted);font-family:var(--font-mono)}
+nav.steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 40px}
+nav.steps a{font-size:14.5px;text-decoration:none;color:var(--fg);padding:6px 13px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.steps a b{color:var(--accent);margin-right:5px}
+nav.steps a:hover,nav.steps a:focus-visible{border-color:var(--accent);outline:none}
+section{margin-bottom:52px;scroll-margin-top:16px}
+h2{display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:400;font-size:28px;margin:0 0 16px;text-wrap:balance}
+h2 .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:20px;flex-shrink:0}
+h3{font-family:var(--font-head);font-weight:400;font-size:21px;margin:26px 0 10px}
+p{margin:0 0 14px;max-width:64ch}
+.key{background:var(--tag-soft);border-radius:14px;padding:16px 20px;margin:0 0 18px;font-size:20px;font-weight:700;line-height:1.5}
+.key small{display:block;font-weight:400;font-size:15.5px;color:var(--muted);margin-top:6px}
+code.i{font-family:var(--font-mono);font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px}
+.story{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.story>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.story .who{font-weight:700;margin-bottom:4px}.story .bad{color:var(--bad)}.story .good{color:var(--ok)}
+.story .res{font-size:15px;color:var(--muted);margin-top:4px}
+@media (max-width:600px){.story{grid-template-columns:1fr}}
+pre.code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:15px;line-height:1.7;padding:16px 18px;border-radius:12px;overflow-x:auto;margin:0 0 16px}
+.c{color:var(--code-dim)}.k{color:var(--code-kw)}.nm{color:var(--code-num)}.s{color:var(--code-str)}
+.parts{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:4px 0 18px}
+.part{display:grid;justify-items:center;gap:6px}
+.part code{font-family:var(--font-mono);font-size:22px;font-weight:700;padding:8px 14px;border-radius:10px;background:var(--surface);border:2px solid var(--line)}
+.part span{font-size:13.5px;color:var(--muted);font-weight:600}
+.part.p-a code{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.part.p-b code{background:var(--tag);border-color:var(--tag);color:var(--tag-fg)}
+.part.p-c code{color:var(--code-num);border-color:var(--code-num)}
+.way{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 14px;display:grid;gap:12px}
+.way.main{border:2px solid var(--accent)}
+.way-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.way-head h3{margin:0}
+.badge{font-size:13px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--accent);color:var(--surface)}
+.way pre.code,.way p,.way .tablewrap{margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.card .t{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--accent)}
+.card .w{font-weight:700}.card .e{font-size:15px;color:var(--muted)}
+.card pre{margin:4px 0 0;font-family:var(--font-mono);font-size:14px;background:var(--bg);padding:7px 11px;border-radius:8px;overflow-x:auto}
+.tablewrap{overflow-x:auto;margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--bg)}
+td.m{font-family:var(--font-mono)}
+.secret{background:var(--surface);border:2px dashed var(--tag);border-radius:16px;padding:16px 20px;margin:0 0 14px}
+.secret h3{margin:0 0 8px}.secret pre.code{margin:8px 0}
+.tracer{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.tr-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:620px){.tr-body{grid-template-columns:1fr}}
+.tr-code{background:var(--code-bg);color:var(--code-fg);font-family:var(--font-mono);font-size:14.5px;padding:14px 0;overflow-x:auto;min-width:0}
+.tr-line{padding:3px 16px;white-space:pre;display:flex;gap:12px;border-left:4px solid transparent}
+.tr-line .ln{color:var(--code-dim);width:1.4em;text-align:right;flex-shrink:0}
+.tr-line.on{background:rgba(140,194,240,.18);border-left-color:var(--tag)}
+.tr-state{padding:16px 18px;display:grid;gap:14px;align-content:start;min-width:0}
+.lbl{font-size:13px;color:var(--muted);font-weight:700}
+.tr-mem{display:flex;gap:16px;flex-wrap:wrap;min-height:100px;align-items:flex-end}
+.tr-mem .cell{font-size:20px;min-width:64px}
+.tr-mem .named.changed>.cell,.tr-mem .named.changed .rec,.tr-mem .named.changed .arr{animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+.arr{display:flex;gap:4px;flex-wrap:wrap}.arr .ac{display:grid;justify-items:center;gap:2px}
+.arr .cell{min-width:48px;font-size:18px;padding:8px}
+.arr small{font-size:12px;color:var(--muted);font-family:var(--font-mono)}
+.rec{border:3px solid var(--accent);border-radius:14px;background:var(--surface);padding:8px 14px;font-family:var(--font-mono);font-size:15px;display:grid;gap:2px}
+.empty{color:var(--muted);font-size:15px}
+.tr-out{font-family:var(--font-mono);font-size:15px;background:var(--bg);border-radius:10px;padding:8px 12px;min-height:64px;white-space:pre-wrap}
+.tr-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px;min-height:50px}
+.tr-ctrl{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.tr-ctrl .pos{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+button{font-family:var(--font-body);font-size:15px;font-weight:700;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:14px;margin-bottom:16px}
+.lab-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lab label{font-weight:700;font-size:14.5px;min-width:7em}
+.lab input[type=range]{accent-color:var(--accent);flex:1;min-width:140px}
+.lab .val{font-family:var(--font-mono);font-weight:700;font-size:18px;min-width:2em}
+.lab pre.code{margin:0}
+.screen{font-family:var(--font-mono);font-size:17px;background:var(--bg);border-radius:10px;padding:8px 12px}
+.lab-note{font-size:15.5px;background:var(--tag-soft);border-radius:10px;padding:10px 14px}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px}
+.q-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.q-head b{font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--accent)}
+.q-type{font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.q-type.hard{background:var(--tag-soft);color:var(--tag-fg)}
+.q p{margin-bottom:10px}.q ul{margin:0 0 10px;padding-left:22px}
+details{border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details .ans{padding-top:8px}details .ans p{margin-bottom:6px}
+.trap{font-size:14.5px;background:var(--tag-soft);border-radius:10px;padding:8px 14px;margin-top:6px}
+.err{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.err-sym{padding:14px 20px;background:var(--bad-soft);display:grid;gap:4px}
+.err-sym .s1{font-weight:700;color:var(--bad);font-size:17.5px}
+.err-sym .msg{font-family:var(--font-mono);font-size:13px;color:var(--fg);opacity:.85;word-break:break-all}
+.err-body{padding:14px 20px;display:grid;gap:8px}
+.err-body .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:10px}
+.err-body .row b{color:var(--muted);font-size:14.5px;padding-top:2px}
+.err-body .row>span{min-width:0}
+.err-body pre.code{margin:6px 0 0;font-size:14px;padding:10px 14px}
+@media (max-width:480px){.err-body .row{grid-template-columns:1fr;gap:0}}
+.note-small{font-size:14px;color:var(--muted)}
+.links{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.lk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px}
+.lk .when{font-size:13px;color:var(--accent);font-weight:700}
+.lk .what{font-family:var(--font-head);font-size:19px}
+.lk .why{font-size:14.5px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.mock{position:relative;aspect-ratio:16/9;max-width:420px;margin:0 auto;border-radius:12px;overflow:hidden;background:linear-gradient(#9fd0ff,#e9f5ff);border:2px solid var(--line)}
+.mock .glass{position:absolute;inset:8px;border:2px dashed #2d63a6;border-radius:8px}
+.mock .glass>span{position:absolute;bottom:4px;right:8px;font-size:11px;color:#2d63a6;font-weight:700}
+.mock .hp{position:absolute;left:14px;top:12px;font-weight:700;font-size:14px;color:#1d2533;background:#fff9;padding:2px 8px;border-radius:6px}
+.mock .bt{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);background:#fff;border:2px solid #1d2533;border-radius:8px;padding:4px 14px;font-size:14px;font-weight:700;color:#1d2533}
+.mock .pl{position:absolute;left:26%;bottom:16%;width:26px;height:26px;background:#e2574c;border-radius:6px}
+ol.howto{padding-left:1.3em;display:grid;gap:8px;margin:0}
+ol.howto li{padding-left:4px}
+ol.howto small{display:block;color:var(--muted)}
+.anc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:620px){.anc{grid-template-columns:1fr}}
+.anc .grid9{display:grid;grid-template-columns:repeat(3,40px);gap:4px}
+.anc .grid9 button{width:40px;height:40px;padding:0;font-size:16px}
+.anc .ctl{display:grid;gap:10px}
+.anc .ctl h4{margin:0;font-size:14px;color:var(--muted)}
+.anc .seg{display:flex;flex-wrap:wrap;gap:6px}
+.scr-wrap{display:grid;place-items:center;min-height:260px;background:var(--line);border-radius:12px;padding:10px}
+.scr{position:relative;background:linear-gradient(#9fd0ff,#e9f5ff);overflow:hidden;border:2px solid #1d2533;border-radius:6px}
+.scr .ui{position:absolute;background:#fff;border:2px solid #1d2533;border-radius:6px;display:grid;place-items:center;font-weight:700;color:#1d2533;box-sizing:border-box;white-space:nowrap;overflow:hidden}
+.scr .dot{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;background:#e2574c;border-radius:50%}
+.anc .res{font-size:14px;min-height:1.6em}
+.anc .res.bad{color:#c0392b;font-weight:700}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="crumb">3개월차 · 3주차 · 유니티 기초</div>
+  <h1>UI (Canvas)<span class="sub">게임 화면 앞에 붙이는 유리판</span></h1>
+  <p class="lead">HP, 점수, 버튼처럼 <b>화면에 딱 붙어 있는 것</b>을 UI라고 해요. 유니티에서 UI는 <b>Canvas</b>라는 판 위에 올려요. Canvas는 게임 화면 맨 앞에 붙은 투명한 유리창 같아요.</p>
+</header>
+
+<div class="hero" aria-label="게임 화면 앞에 점선 Canvas가 있고, 그 위에 HP 글자와 시작 버튼이 올라가 있어요">
+  <div class="mock"><div class="pl"></div><div class="glass"><span>Canvas</span></div><div class="hp">HP: 100</div><div class="bt">시작</div></div>
+</div>
+
+<nav class="steps" aria-label="학습 단계">
+  <a href="#s1"><b>1</b>Canvas란?</a><a href="#s2"><b>2</b>왜 따로 있어?</a><a href="#s3"><b>3</b>만드는 순서</a><a href="#s4"><b>4</b>UI 요소 종류</a><a href="#s5"><b>5</b>앵커 실험</a><a href="#s6"><b>6</b>문제 풀기</a><a href="#s7"><b>7</b>이럴 땐?</a><a href="#s8"><b>8</b>다음에 배울 것</a>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Canvas란?</h2>
+  <div class="key">UI 요소를 올려 두는 판이에요. UI는 반드시 Canvas의 자식이어야 보여요.<small>canvas = 그림 그리는 천, 화폭</small></div>
+  <p>Hierarchy에서 Canvas 아래에 들어간 Text, Image, Button만 화면에 그려져요. Canvas 밖으로 빼면 안 보여요.</p>
+  <p>Canvas 위의 UI는 <b>Transform 대신 Rect Transform</b>을 가져요. 위치뿐 아니라 <b>가로·세로 크기</b>와 <b>화면 어디를 기준으로 붙을지(앵커)</b>를 정해요.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>왜 따로 있어?</h2>
+  <div class="cards">
+    <div class="card"><span class="w">카메라와 상관없이 고정</span><span class="e">플레이어가 움직여 카메라가 따라가도 HP 글자는 화면 왼쪽 위에 그대로 있어야 해요.</span></div>
+    <div class="card"><span class="w">해상도 맞추기</span><span class="e">PC, 태블릿, 휴대폰은 화면 크기가 달라요. Canvas Scaler와 앵커가 UI 크기와 자리를 맞춰 줘요.</span></div>
+    <div class="card"><span class="w">클릭 처리</span><span class="e">같이 생기는 EventSystem이 버튼 클릭·터치를 받아 줘요.</span></div>
+  </div>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>만드는 순서</h2>
+  <ol class="howto">
+    <li><b>Hierarchy 우클릭 → UI → Text - TextMeshPro</b><small>처음이면 TMP Importer 창이 떠요. <b>Import TMP Essentials</b>를 눌러요. (Unity 6에서는 메뉴 이름이 "UI (Canvas)"로 보일 수 있어요)</small></li>
+    <li><b>Canvas와 EventSystem이 자동으로 생겨요</b><small>Text는 Canvas의 자식으로 들어가 있어요.</small></li>
+    <li><b>Canvas 선택 → Canvas Scaler → UI Scale Mode를 Scale With Screen Size로</b><small>Reference Resolution은 1920 × 1080. 화면이 작아지면 UI도 같이 작아져요.</small></li>
+    <li><b>Scene 창 위의 2D 버튼을 켜고, Canvas를 더블클릭</b><small>Canvas가 화면 전체에 맞춰 보여요.</small></li>
+    <li><b>Rect Transform의 앵커 프리셋(네모 아이콘)으로 기준 위치 정하기</b><small><b>Alt</b>를 누르고 고르면 위치까지 그 자리로 같이 옮겨져요.</small></li>
+    <li><b>Game 창 위의 해상도 메뉴로 크기를 바꿔 보며 확인</b><small>Free Aspect 대신 1920×1080, 세로 화면 등을 추가해서 봐요.</small></li>
+  </ol>
+  <div class="way main">
+    <div class="way-head"><span class="badge">예제</span><h3>HP 글자 바꾸기 + 버튼 연결</h3></div>
+<pre class="code cs">using UnityEngine;
+using TMPro;                        // TextMeshPro를 쓰려면 꼭
+
+public class UIManager : MonoBehaviour
+{
+    public TMP_Text hpText;          // Inspector에서 HP 글자 오브젝트를 끌어다 넣어요
+    int hp = 100;
+
+    void Start()
+    {
+        hpText.text = "HP: " + hp;
+    }
+
+    public void OnClickHeal()        // 버튼에 연결할 함수는 public
+    {
+        hp += 10;
+        hpText.text = "HP: " + hp;
+    }
+}</pre>
+  </div>
+  <div class="secret">
+    <h3>버튼에 함수 연결하기</h3>
+    <p>① 빈 오브젝트(예: UIManager)에 위 스크립트를 붙이고, hpText 칸에 Text 오브젝트를 끌어다 놓아요. ② Button을 선택해 Inspector의 <b>On Click ()</b> 목록에서 <b>+</b>를 눌러요. ③ 빈 칸에 UIManager 오브젝트를 끌어다 놓고, 함수 메뉴에서 <b>UIManager → OnClickHeal</b>을 골라요.</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>UI 요소 종류</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>요소</th><th>하는 일</th><th>게임 예</th></tr></thead>
+    <tbody>
+      <tr><td class="m">Text - TextMeshPro</td><td>글자</td><td>HP, 점수, 대사</td></tr>
+      <tr><td class="m">Image</td><td>그림 (스프라이트)</td><td>아이콘, 하트, 배경</td></tr>
+      <tr><td class="m">Button - TextMeshPro</td><td>누르면 함수 실행</td><td>시작, 일시정지</td></tr>
+      <tr><td class="m">Slider</td><td>막대 (값 0~1 등)</td><td>HP 바, 볼륨</td></tr>
+      <tr><td class="m">Toggle</td><td>켜기 / 끄기 체크</td><td>소리 켜기</td></tr>
+      <tr><td class="m">Input Field - TextMeshPro</td><td>글자 입력 칸</td><td>닉네임 입력</td></tr>
+      <tr><td class="m">Panel</td><td>반투명 판 (여러 UI 묶기)</td><td>설정 창, 게임 오버 창</td></tr>
+    </tbody></table></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Canvas Render Mode</th><th>뜻</th></tr></thead>
+    <tbody>
+      <tr><td class="m">Screen Space - Overlay</td><td>기본값. 화면 맨 앞에 붙어요. 대부분 이걸 써요</td></tr>
+      <tr><td class="m">Screen Space - Camera</td><td>카메라 앞 일정 거리에 붙어요. UI 앞에 파티클을 그릴 때</td></tr>
+      <tr><td class="m">World Space</td><td>게임 세계 안의 물건처럼 놓여요. 적 머리 위 HP 바</td></tr>
+    </tbody></table></div>
+  <div class="secret">
+    <h3>누가 앞에 그려져?</h3>
+    <p>같은 Canvas 안에서는 <b>Hierarchy에서 아래쪽에 있을수록 앞에</b> 그려져요. 버튼이 Panel에 가려지면 버튼을 Panel 아래로 끌어 내려요.</p>
+  </div>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>앵커 실험</h2>
+  <p>1920 × 1080 화면에서 <b>오른쪽 위</b>에 일시정지 버튼을 놓았어요. 앵커(기준점, 빨간 점)와 Canvas Scaler를 바꾼 뒤 화면 크기를 바꿔 보세요. 어떤 조합이 모든 화면에서 오른쪽 위를 지킬까요?</p>
+  <div class="lab anc" id="anc">
+    <div class="ctl">
+      <h4>앵커</h4>
+      <div class="grid9" role="group" aria-label="앵커 프리셋"></div>
+      <h4>Canvas Scaler</h4>
+      <div class="seg" data-g="scale"><button type="button" data-v="const" aria-pressed="true">Constant Pixel Size (기본)</button><button type="button" data-v="screen" aria-pressed="false">Scale With Screen Size</button></div>
+      <h4>화면 크기</h4>
+      <div class="seg" data-g="res"><button type="button" data-v="0" aria-pressed="true">1920×1080</button><button type="button" data-v="1" aria-pressed="false">1280×720</button><button type="button" data-v="2" aria-pressed="false">1080×1920 세로</button></div>
+    </div>
+    <div style="display:grid;gap:8px">
+      <div class="scr-wrap"><div class="scr" id="anc-scr"><div class="dot" id="anc-dot"></div><div class="ui" id="anc-ui">일시정지</div></div></div>
+      <div class="res" id="anc-res" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="lab-note">정답 조합은 <b>앵커 오른쪽 위 + Scale With Screen Size</b>예요. 앵커는 "어디를 기준으로 붙을지", Canvas Scaler는 "화면 크기에 맞춰 커지고 작아질지"를 정해요.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>문제 풀기</h2>
+  <div class="q"><div class="q-head"><b>1번</b><span class="q-type">결과 맞히기</span></div><p>HP Text를 Hierarchy에서 Canvas 밖(맨 위 칸)으로 끌어냈어요. 게임 화면에서 HP 글자는?</p>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>안 보여요.</b> UI는 Canvas의 자식일 때만 그려져요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>2번</b><span class="q-type">결과 맞히기</span></div><p>Canvas 안의 Hierarchy 순서가 <code class="i">Button</code>, 그 아래 <code class="i">Panel</code>이에요. Panel이 화면 전체를 덮어요. 버튼은?</p>
+    <details><summary>정답 보기</summary><div class="ans"><p>Panel에 <b>가려지고 클릭도 안 돼요</b>. 아래쪽(Panel)이 앞에 그려지고, 클릭도 Panel이 먼저 받아요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>3번</b><span class="q-type">원인 찾기</span></div><pre class="code cs">void OnClickHeal()
+{
+    hp += 10;
+}</pre><p>Button의 On Click () 함수 목록에 OnClickHeal이 안 보여요. 왜일까요?</p>
+    <details><summary>정답 보기</summary><div class="ans"><p><b>public</b>이 빠졌어요. 안 쓰면 private이라 버튼이 못 봐요. <code class="i">public void OnClickHeal()</code>로 고쳐요.</p></div></details></div>
+  <div class="q"><div class="q-head"><b>4번</b><span class="q-type">고쳐 보기</span></div><pre class="code cs">hpText.text = hp;</pre><p>hp는 int예요. 에러가 나요. 고쳐 보세요.</p>
+    <details><summary>정답 보기</summary><div class="ans"><p><code class="i">.text</code>에는 글자(string)만 들어가요.</p><pre class="code cs">hpText.text = "HP: " + hp;
+// 또는 hpText.text = hp.ToString();</pre></div></details></div>
+  <div class="q"><div class="q-head"><b>5번</b><span class="q-type hard">도전</span></div><p>휴대폰 세로 화면에서도 점수가 항상 <b>화면 위 가운데</b>에 있게 하려면 앵커와 Canvas Scaler를 어떻게 정할까요?</p>
+    <details><summary>정답 보기</summary><div class="ans"><p>앵커는 <b>위 가운데(top-center)</b>, Canvas Scaler는 <b>Scale With Screen Size</b>예요. 위 5번 실험에서 직접 확인해 보세요.</p></div></details></div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>이럴 땐?</h2>
+  <div class="err"><div class="err-sym"><span class="s1">한글이 네모(□□□)로 나와요</span><span class="msg">HP □□□ / Console: The character with Unicode value 한 was not found in the [LiberationSans SDF] font asset or any potential fallbacks.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>TextMeshPro 기본 폰트(LiberationSans SDF)에 한글이 없어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>한글 폰트 파일(.ttf)을 프로젝트에 넣고 <b>Window → TextMeshPro → Font Asset Creator</b>에서 한글 폰트 에셋을 만들어 Text의 Font Asset 칸에 넣어요. 만드는 설정은 수업 때 같이 해요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">버튼을 눌러도 반응이 없어요 (에러 없음)</span><span class="msg">On Click () 연결은 했는데 아무 일도 안 일어남</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>① Hierarchy에 EventSystem이 없거나 ② 다른 UI(Panel, Image)가 버튼 위를 덮고 있거나 ③ On Click ()에 오브젝트만 넣고 함수를 안 골랐어요(No Function).</span></div>
+      <div class="row"><b>어떻게?</b><span>EventSystem이 없으면 Hierarchy 우클릭 → UI → Event System. 덮고 있는 Image는 Inspector에서 <b>Raycast Target</b> 체크를 꺼요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">TMP_Text를 모른대요</span><span class="msg">error CS0246: The type or namespace name 'TMP_Text' could not be found (are you missing a using directive or an assembly reference?)</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>맨 위에 <code class="i">using TMPro;</code>가 없어요.</span></div>
+      <div class="row"><b>어떻게?</b><span><code class="i">using TMPro;</code>를 추가해요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">글자를 바꾸려니 칸이 비었대요</span><span class="msg">UnassignedReferenceException: The variable hpText of UIManager has not been assigned.</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>Inspector의 Hp Text 칸에 Text 오브젝트를 안 끌어다 놓았어요.</span></div>
+      <div class="row"><b>어떻게?</b><span>Hierarchy의 Text 오브젝트를 그 칸으로 끌어다 놓아요. 칸에 안 들어가면 변수 자료형이 <code class="i">Text</code>(옛날 UI)인지 확인하고 <code class="i">TMP_Text</code>로 바꿔요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">화면 크기를 바꾸니 UI가 밀려나거나 사라져요</span><span class="msg">1920×1080에선 괜찮았는데 휴대폰에선 화면 밖</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>앵커가 가운데(기본값)이고 Canvas Scaler가 Constant Pixel Size예요.</span></div>
+      <div class="row"><b>어떻게?</b><span>앵커를 붙고 싶은 모서리로, Canvas Scaler를 Scale With Screen Size로. 위 5번 실험 참고.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">Scene 창에서 Canvas가 엄청 커요</span><span class="msg">플레이어는 점처럼 작고 Canvas는 거대함</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>정상이에요. Canvas는 1픽셀을 게임 세계 1칸으로 그려서 Scene 창에서는 커 보여요. Game 창에서는 화면에 딱 맞아요.</span></div>
+      <div class="row"><b>어떻게?</b><span>UI 작업할 땐 2D 버튼을 켜고 Canvas를 더블클릭해서 봐요.</span></div></div></div>
+  <div class="err"><div class="err-sym"><span class="s1">글자 박스는 있는데 글자가 안 보여요</span><span class="msg">Text 오브젝트는 있음, 화면엔 빈칸</span></div>
+    <div class="err-body"><div class="row"><b>왜?</b><span>글자 크기(Font Size)가 박스보다 커서 잘렸거나, 글자 색이 배경과 같아요.</span></div>
+      <div class="row"><b>어떻게?</b><span>Rect Transform의 Width/Height를 늘리거나 Font Size를 줄여요. <b>Auto Size</b>를 켜면 박스에 맞춰져요.</span></div></div></div>
+  <p class="note-small">메뉴 이름과 메시지는 Unity 6 기준이에요. 버전에 따라 조금 다를 수 있어요.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>다음에 배울 것</h2>
+  <div class="links">
+    <div class="lk"><span class="when">3개월차 3주차</span><span class="what">종스크롤 슈팅 게임</span><span class="why">현재 체력과 점수를 UI로 표시</span></div>
+    <div class="lk"><span class="when">4개월차 1주차</span><span class="what">클리커 게임 (UI)</span><span class="why">버튼, 클릭 효과, 여러 UI 제어</span></div>
+    <div class="lk"><span class="when">5개월차</span><span class="what">FPS</span><span class="why">조준점과 탄약 수 UI</span></div>
+  </div>
+</section>
+<footer>유니티 기초 학습 자료 · UI (Canvas) · 이전: C와 C#의 배열 · 함수</footer>
+</div>
+<script>
+(function(){
+  const root=document.getElementById('anc'),scr=document.getElementById('anc-scr'),ui=document.getElementById('anc-ui'),dot=document.getElementById('anc-dot'),res=document.getElementById('anc-res');
+  const RES=[[1920,1080],[1280,720],[1080,1920]];
+  const NAMES=[['왼쪽 위','위 가운데','오른쪽 위'],['왼쪽 가운데','가운데','오른쪽 가운데'],['왼쪽 아래','아래 가운데','오른쪽 아래']];
+  const ARROWS=['↖','↑','↗','←','•','→','↙','↓','↘'];
+  const BW=200,BH=80,P=[1920-40-BW/2,40+BH/2]; // 기준 화면에서 버튼 가운데 위치
+  let ax=1,ay=1,scale='const',ri=0;
+  const g=root.querySelector('.grid9');
+  g.innerHTML=ARROWS.map((a,i)=>'<button type="button" data-i="'+i+'" aria-label="'+NAMES[Math.floor(i/3)][i%3]+'" aria-pressed="'+(i===4)+'">'+a+'</button>').join('');
+  function draw(){
+    const [W,H]=RES[ri],s=scale==='screen'?W/1920:1;
+    const off=[P[0]-ax/2*1920,P[1]-ay/2*1080];
+    const cx=ax/2*W+off[0]*s,cy=ay/2*H+off[1]*s,bw=BW*s,bh=BH*s;
+    const box=Math.min(scr.parentElement.clientWidth-24,480),k=Math.min(box/W,300/H);
+    scr.style.width=W*k+'px';scr.style.height=H*k+'px';
+    Object.assign(ui.style,{left:(cx-bw/2)*k+'px',top:(cy-bh/2)*k+'px',width:bw*k+'px',height:bh*k+'px',fontSize:Math.max(8,26*s*k)+'px'});
+    dot.style.left=ax/2*W*k+'px';dot.style.top=ay/2*H*k+'px';
+    const out=cx+bw/2>W+1||cx-bw/2<-1||cy+bh/2>H+1||cy-bh/2<-1;
+    const corner=W-(cx+bw/2)<=60*Math.max(s,.5)&&cy-bh/2<=60*Math.max(s,.5);
+    const nm=NAMES[ay][ax];
+    res.className='res'+(out?' bad':'');
+    res.textContent=out?'버튼이 화면 밖으로 나갔어요! (앵커: '+nm+')':corner?'오른쪽 위를 지키고 있어요.'+(scale==='const'&&ri>0?' 다만 버튼 크기는 화면에 맞춰 줄지 않았어요 (Constant Pixel Size).':''):'버튼이 오른쪽 위에서 벗어났어요. (앵커: '+nm+')';
+  }
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.i!==undefined){const i=+b.dataset.i;ax=i%3;ay=Math.floor(i/3);g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));}
+    else{const grp=b.parentElement.dataset.g;if(!grp)return;b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(grp==='scale')scale=b.dataset.v;else ri=+b.dataset.v;}
+    draw();});
+  addEventListener('resize',draw);
+  draw();
+})();
+</script>
+<script>
+(function(){
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const RX=/(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|NULL|typedef|new|delete|nullptr)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  const CSK=/^(public|private|protected|class|using|static|string|bool|true|false|foreach|in|var|null|this|override|ref|out|base|namespace)$/;
+  const CK=/^(int|float|double|char|void|if|else|for|while|do|return|switch|case|break|continue|default|struct|const|long|unsigned|sizeof|new|delete|typedef)$/;
+  const RXC=/(\/\/[^\n]*)|(\$?"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(#\w+)|\b([A-Za-z_]\w*)\b|\b(\d+(?:\.\d+)?f?)\b/g;
+  function hlCs(src){let out='',last=0;src.replace(RXC,(m,c,s,p,w,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;const kw=w&&(CSK.test(w)||CK.test(w));out+=(w&&!kw)?esc(m):'<span class="'+(c?'c':s?'s':(p||kw)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  function hl(src,cs){if(cs)return hlCs(src);let out='',last=0;src.replace(RX,(m,c,s,p,k,n,i)=>{out+=esc(src.slice(last,i));last=i+m.length;out+='<span class="'+(c?'c':s?'s':(p||k)?'k':'nm')+'">'+esc(m)+'</span>';return m;});return out+esc(src.slice(last));}
+  window.hlC=hl;
+  document.querySelectorAll('pre.code').forEach(p=>{p.innerHTML=hl(p.textContent,p.classList.contains('cs'))});
+  function build(root,T){
+  if(!T||!root) return;
+  root.className='tracer';
+  root.innerHTML='<div class="tr-body"><div class="tr-code"></div><div class="tr-state"><div><div class="lbl">'+(T.memLabel||'지금 있는 변수')+'</div><div class="tr-mem"></div></div><div><div class="lbl">'+(T.outLabel||'화면에 나온 글자')+'</div><div class="tr-out"></div></div><div class="tr-note" aria-live="polite"></div></div></div><div class="tr-ctrl"><button type="button" data-a="reset">처음으로</button><button type="button" data-a="prev">한 줄 뒤로</button><button type="button" data-a="next" class="primary">다음 줄 실행</button><span class="pos"></span></div>';
+  const q=s=>root.querySelector(s);
+  q('.tr-code').innerHTML=T.code.map((l,i)=>'<div class="tr-line"><span class="ln">'+(i+1)+'</span><span>'+(hl(l,T.cs)||' ')+'</span></div>').join('');
+  const lines=[...root.querySelectorAll('.tr-line')];
+  let step=0;
+  function stateAt(n){const mem={};let out='';for(let i=0;i<n;i++){const s=T.steps[i];if(s.mem)for(const k in s.mem){if(s.mem[k]===null)delete mem[k];else mem[k]=s.mem[k];}if(s.out)out+=s.out;}return{mem,out};}
+  function show(v){
+    if(Array.isArray(v))return '<div class="arr">'+v.map((x,i)=>'<div class="ac"><span class="cell">'+esc(x)+'</span><small>['+i+']</small></div>').join('')+'</div>';
+    if(v&&typeof v==='object'&&v.f)return '<div class="rec">'+Object.keys(v.f).map(k=>'<span>'+esc(k)+' : <b>'+esc(v.f[k])+'</b></span>').join('')+'</div>'+(v.a?'<small>'+esc(v.a)+'</small>':'');
+    if(v&&typeof v==='object')return '<span class="cell">'+esc(v.v)+'</span><small>'+esc(v.a)+'</small>';
+    return '<span class="cell">'+esc(v)+'</span>';
+  }
+  function render(){
+    const cur=stateAt(step),prev=stateAt(Math.max(0,step-1));
+    lines.forEach((el,i)=>el.classList.toggle('on',step>0&&T.steps[step-1].ln===i));
+    const keys=Object.keys(cur.mem);
+    q('.tr-mem').innerHTML=keys.length?keys.map(k=>'<div class="named'+(step>0&&JSON.stringify(cur.mem[k])!==JSON.stringify(prev.mem[k])?' changed':'')+'"><span class="nametag">'+esc(k)+'</span>'+show(cur.mem[k])+'</div>').join(''):'<span class="empty">아직 만든 변수가 없어요</span>';
+    q('.tr-out').textContent=cur.out;
+    q('.tr-note').textContent=step===0?'"다음 줄 실행"을 눌러 시작해요.':T.steps[step-1].note;
+    q('.pos').textContent=step+' / '+T.steps.length;
+    q('[data-a=prev]').disabled=q('[data-a=reset]').disabled=step===0;
+    q('[data-a=next]').disabled=step===T.steps.length;
+  }
+  root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;if(a==='next'&&step<T.steps.length)step++;else if(a==='prev'&&step>0)step--;else if(a==='reset')step=0;else return;render();});
+  render();
+  }
+  build(document.getElementById('tracer'),window.TRACE);
+  document.querySelectorAll('[data-trace]').forEach(el=>build(el,(window.TRACES||{})[el.dataset.trace]));
+})();
+</script>
+
+</body>
+</html>

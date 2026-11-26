@@ -36,7 +36,7 @@ footer{margin-top:40px;color:var(--muted);font-size:13px}
 @media (prefers-reduced-motion:reduce){.card{transition:none}}
 </style>
 <div class="wrap">
-  <div class="eyebrow">C 기초 · 학습 자료</div>
+  <div class="eyebrow">C 기초 → 유니티 기초 · 학습 자료</div>
   <h1>C언어, 처음부터 하나씩</h1>
   <p class="lead">수업에서 배운 주제를 다시 볼 때 쓰는 자료예요. 페이지마다 정의, 문법, 직접 해 보기, 확인 문제, 자주 나는 오류 정리가 들어 있어요.</p>
   <a class="cur" href="curriculum.html"><div><b>6개월 커리큘럼 전체 보기</b><br><span>C → Unity 주차별 계획</span></div><i>→</i></a>
@@ -51,6 +51,7 @@ const GROUPS = [
   ["2개월차 · 1주", [["c-pointer.html","포인터","주소를 적어 둔 쪽지"],["c-pointer2.html","포인터 2","쪽지를 들고 배열 위를 걷기"],["c-callvalue.html","Call by value","함수에는 복사본이 간다"],["c-callref.html","Call by reference","주소를 넘겨 원본 고치기"],["c-struct.html","구조체","여러 값을 묶어 나만의 자료형 만들기"]]],
   ["2개월차 · 2주", [["c-malloc.html","동적 할당","new · malloc으로 메모리 빌리기"],["c-linkedlist.html","링크드 리스트","다음 상자 주소를 든 상자들의 줄"]]],
   ["2개월차 · 4주", [["c-practice.html","코딩 문제 풀이","조건문·반복문·배열 문제 5개"]]],
+  ["3개월차 · 유니티 기초", [["u-start.html","Start와 main","유니티에는 main이 없어요"],["u-debuglog.html","printf와 Debug.Log","유니티의 printf"],["u-component.html","컴포넌트","오브젝트에 붙이는 기능 부품"],["u-csharp.html","C와 C#의 배열 · 함수","닮았지만 조금 다른 두 언어"],["u-canvas.html","UI (Canvas)","게임 화면 앞에 붙이는 유리판"]]],
 ];
 let k = 0;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
